@@ -503,17 +503,22 @@ button {
 }
 
 .blu {
-     color: #03cafc;
+     color: #1f9c3e;
      text-transform: initial;
 }
 
 .glasses .glasses_box {
      text-align: center;
      border: #555556 solid 1px;
-     border-radius: 2px;
-     padding: 120px 0px 30px 0px;
+     border-radius: 6px; /* un poco más redondeado */
+     padding: 15px 0 30px 0; /* menos padding arriba */
      margin-bottom: 30px;
+     aspect-ratio: 1 / 1; /* para que sea cuadrado */
+     display: flex;
+     flex-direction: column;
+     justify-content: space-between;
 }
+
 
 .glasses .glasses_box figure {
      margin: 0;
@@ -846,13 +851,15 @@ ul.location_icon li a {
 
 .position_head .header {
      position: inherit;
-     background: #03cafc;
+     background: #fff4d3;
 }
 
 .position_head .glasses,
 .shop {
      margin-bottom: 90px;
 }
+
+
 
 
 
@@ -930,4 +937,222 @@ ul.location_icon li a {
 .custom-toggler .navbar-toggler-icon {
     /* El valor '%23b68c3f' es el código del color dorado que pediste */
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23b68c3f' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+
+.glasses .glasses_box {
+     text-align: center;
+     border: #b68c3f solid 1px; /* borde dorado */
+     border-radius: 6px;
+     padding: 15px 0 30px 0;
+     margin-bottom: 30px;
+     aspect-ratio: 1 / 1;
+     display: flex;
+     flex-direction: column;
+     justify-content: space-between;
+     background: #fff;
+     box-shadow: 0 0 8px rgba(182, 140, 63, 0.3); /* sutil sombra dorada */
+}
+
+.glasses .glasses_box figure {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 0 15px 0;
+}
+
+.glasses .glasses_box figure img {
+  max-width: 80%;
+  max-height: 80%;
+  object-fit: contain;
+}
+
+.glasses .glasses_box h3 {
+  padding: 0 0 8px 0;
+  margin: 0;
+  color: #000000; /* precio en dorado */
+  font-weight: 700;
+}
+
+.glasses .glasses_box p {
+  margin: 0 0 12px 0;
+  color: #3a3a3a;
+  font-weight: 500;
+}
+
+.btn-add-cart {
+  background-color: #b68c3f;
+  border: none;
+  color: white;
+  padding: 10px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 700;
+  width: 100%;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 8px rgba(182, 140, 63, 0.5);
+}
+
+.btn-add-cart:hover {
+  background-color: #967534; /* tono más oscuro dorado */
+  box-shadow: 0 4px 12px rgba(150, 117, 52, 0.7);
+}
+
+
+
+/* Modal general */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1050;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: rgb(255, 248, 238);
+  padding: 20px 40px 40px 40px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  text-align: center;
+}
+
+/* Cerrar modal */
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Slider imágenes */
+.slider {
+  position: relative;
+  height: 250px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.slide {
+  display: none;
+  max-height: 250px;
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.slide.active {
+  display: block;
+}
+
+/* Botones colores */
+.color-options {
+  margin-bottom: 20px;
+}
+
+.color-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  margin: 0 6px;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.color-btn.active {
+  border-color: #b68c3f;
+}
+
+/* Contador */
+.contador {
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.contador button {
+  font-size: 20px;
+  width: 35px;
+  height: 35px;
+  border: 1px solid #b68c3f;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  border-radius: 4px;
+  user-select: none;
+}
+
+.contador input {
+  width: 50px;
+  text-align: center;
+  font-size: 18px;
+  border: 1px solid #b68c3f;
+  border-radius: 4px;
+  background: #f9f9f9;
+  pointer-events: none;
+}
+/* Botón agregar carrito */
+.modal-content .btn-add-cart {
+  background-color: #b68c3f;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.modal-content .btn-add-cart:hover {
+  background-color: #a47f2e;
+}
+
+/* Slider de imágenes */
+.slider {
+  display: flex;
+  justify-content: center;  /* Alinea las imágenes horizontalmente al centro */
+  align-items: center;      /* Alinea las imágenes verticalmente al centro */
+  height: 300px;            /* Ajusta la altura del contenedor */
+  width: 100%;              /* Hace que el contenedor ocupe todo el ancho disponible */
+  overflow: hidden;         /* Oculta las partes de la imagen que sobresalgan */
+  position: relative;       /* Permite posicionar las imágenes dentro de este contenedor */
+}
+
+.slide {
+  width: 100%;              /* Asegura que las imágenes ocupen todo el ancho del contenedor */
+  height: 100%;             /* Asegura que las imágenes ocupen toda la altura del contenedor */
+  object-fit: cover;        /* Recorta la imagen si es necesario para llenar el contenedor */
+  object-position: center;  /* Asegura que se recorte desde el centro de la imagen */
+  position: absolute;       /* Permite que las imágenes se apilen en el mismo lugar */
+  transition: opacity 0.3s ease; /* Transición suave para cambiar entre las imágenes */
+}
+
+/* Para asegurar que la imagen activa se vea bien */
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.slide:not(.active) {
+  opacity: 0;
+  visibility: hidden;
 }
