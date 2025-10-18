@@ -221,13 +221,14 @@
         background: transparent;
     }
     .navigation .navbar-collapse {
-        background: #070404;
+        background: #070404bb;
         padding: 20px;
         margin-top: 55px;
         position: absolute;
         width: 100%;
         margin-right: 20px;
         z-index: 999;
+        border-radius: 15px;
     }
     .navigation.navbar-dark .navbar-nav .nav-link {
         padding: 10px 0;
