@@ -906,7 +906,7 @@ ul.location_icon li a {
 .banner-img {
      width: 100%;
      /* Reducimos la altura para dejar espacio para el título */
-     height: 400px; 
+     height: 300px; 
      position: relative;
      overflow: hidden;
 }
