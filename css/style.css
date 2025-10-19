@@ -487,7 +487,7 @@ button {
 
 .glasses {
      background: #fff;
-     margin-top: 90px;
+     margin-top: 20px;
 }
 
 .glasses .titlepage {
@@ -1220,4 +1220,15 @@ ul.location_icon li a {
      text-align: center; /* Centra el texto */
      
      z-index: 100 !important;
+}
+
+html, body {
+    /* Aplicar la regla de desbordamiento horizontal a ambos elementos */
+    overflow-x: hidden; 
+    
+    /* Asegurar que ambos ocupen el 100% del ancho de la pantalla */
+    width: 100%; 
+    
+    /* Nota: 'width: 100%' en body podría ser 'min-width: 100%' en algunos casos, 
+       pero 'overflow-x: hidden' es la clave. */
 }
