@@ -1004,18 +1004,24 @@ ul.location_icon li a {
 
 
 /* Modal general */
+/* Modal general - CORREGIDO PARA CENTRADO */
 .modal {
-  display: none;
+  display: none; /* Se cambia a 'flex' en JS para mostrar */
   position: fixed;
   z-index: 1050;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  min-height: 100vh; /* Asegura que ocupe la altura visible del viewport */
+  
+  /* PROPIEDADES CLAVE PARA CENTRADO FLEX */
+  align-items: center;    /* Centra el contenido verticalmente */
+  justify-content: center;  /* Centra el contenido horizontalmente */
+  
   background-color: rgba(0,0,0,0.6);
-  justify-content: center;
-  align-items: center;
+  
+  /* Elimina 'overflow: auto;' o 'overflow-y: auto;' de aquí. */
 }
 
 .modal-content {
