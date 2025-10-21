@@ -1081,6 +1081,7 @@ ul.location_icon li a {
   transition: border-color 0.3s ease;
   display: inline-block;
   vertical-align: middle;
+  border: 2px solid transparent;
 }
 
 .color-btn.active {
