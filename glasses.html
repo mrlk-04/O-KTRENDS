@@ -8,7 +8,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="viewport" content="initial-scale=1, maximum-scale=1">
       <!-- site metas -->
-      <title>sungla</title>
+      <title>O&KTrends</title>
       <meta name="keywords" content="">
       <meta name="description" content="">
       <meta name="author" content="">
@@ -19,7 +19,7 @@
       <!-- Responsive-->
       <link rel="stylesheet" href="css/responsive.css">
       <!-- fevicon -->
-      <link rel="icon" href="images/fevicon.png" type="image/gif" />
+      <link rel="icon" href="images/logoiconsinfondo.ico" type="image/gif" />
       <!-- Scrollbar Custom CSS -->
       <link rel="stylesheet" href="css/jquery.mCustomScrollbar.min.css">
       <!-- Tweaks for older IEs-->
@@ -160,6 +160,10 @@
 </div>
 
 
+
+<button id="vaciarCarritoBtn" class="btn-clear-cart" style="/* Puedes darle el estilo que desees */">
+    🗑️ Vaciar Carrito
+</button>
 
       <!-- end Our  Glasses section -->
       <!--  footer -->
@@ -497,10 +501,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const modalesCount = 6;
 
-    // 🟢 1. ESTRUCTURA MODIFICADA: Ahora se incluye el nombre del reloj para cada modal
+    // --- NÚMERO DE MODALES ---
+    const modalesCountRelojes = 6;
+    const modalesCountRopa = 13;
+
+    // 🟢 ESTRUCTURA PRINCIPAL: Datos de TODOS los productos (relojes y ropa)
     const productData = {
+        // ========== RELOJES (MODAL 1 a 6) ==========
         modalProducto1: { 
             name: 'INVICTA Caballero (Silicona)',
             options: [
@@ -512,89 +520,136 @@ document.addEventListener("DOMContentLoaded", () => {
             ]
         },
         modalProducto2: {
-            name: 'INVICTA Caballero (Pulso en silicona)', // Asegúrate de que este nombre sea exacto
+            name: 'INVICTA Caballero (Pulso en silicona)', 
             options: [
                 { color: 'Dorado', price: 175000 },
                 { color: 'Bronce', price: 175000 },
             ]
-        },        
+        },        
         modalProducto3: {
-            name: 'INVICTA Caballero', // Asegúrate de que este nombre sea exacto
+            name: 'INVICTA Caballero', 
             options: [
                 { color: 'Dorado', price: 185000 },
                 { color: 'Verde', price: 185000 },
                 { color: 'Negro', price: 185000 },
                 { color: 'Azul', price: 185000 },
             ]
-        },        
-         modalProducto4: { 
-               name: 'Combo Caballero', // Nombre que aparecerá en la alerta del carrito
-               options: [
-                     { color: 'Negro', price: 65000 },
-                     { color: 'Plateado', price: 65000 },
-                     { color: 'Dorado', price: 65000 },
-               ]
-            },
-         modalProducto5: { 
-        name: 'Pareja Cartier', // Nombre que aparecerá en la alerta del carrito
-        options: [
-            { color: 'Plateado Bronce Centro Blanco', price: 120000 },
-            { color: 'Plateado Dorado Centro Oscuro', price: 120000 },
-            { color: 'Plateado Centro Blanco', price: 120000 },
-            { color: 'Plateado Dorado Centro Negro', price: 120000 },
-            { color: 'Dorado Centro Negro', price: 120000 },
-            { color: 'Dorado Centro Blanco', price: 120000 },
-        ]
-    },
-    modalProducto6: { 
-        name: 'ROLEX Presidencial', // Nombre que aparecerá en la alerta del carrito
-        options: [
-            { color: 'Verde Centro Negro Borde Dorado', price: 110000 },
-            { color: 'Azul Centro Azul Borde Dorado', price: 110000 },
-            { color: 'Negro Centro Negro Borde Dorado', price: 110000 },
-            { color: 'Azul Centro Azul', price: 110000 },
-            { color: 'Negro Centro Negro', price: 110000 },
-            { color: 'Verde Centro Verde Borde Dorado', price: 110000 },
-        ]
-    }
-        // *** IMPORTANTE: DEBES CONTINUAR ESTA ESTRUCTURA PARA modalProducto3, 4, 5 y 6 ***
-        // Ejemplo para Modal 3:
-        /*
-        modalProducto3: {
-            name: 'Marca X Modelo Y', 
+        },        
+        modalProducto4: { 
+            name: 'Combo Caballero', 
             options: [
-                { color: 'Verde', price: 50000 },
-                // ...
+                { color: 'Negro', price: 65000 },
+                { color: 'Plateado', price: 65000 },
+                { color: 'Dorado', price: 65000 },
             ]
         },
-        */
+        modalProducto5: { 
+            name: 'Pareja Cartier', 
+            options: [
+                { color: 'Plateado Bronce Centro Blanco', price: 120000 },
+                { color: 'Plateado Dorado Centro Oscuro', price: 120000 },
+                { color: 'Plateado Centro Blanco', price: 120000 },
+                { color: 'Plateado Dorado Centro Negro', price: 120000 },
+                { color: 'Dorado Centro Negro', price: 120000 },
+                { color: 'Dorado Centro Blanco', price: 120000 },
+            ]
+        },
+        modalProducto6: { 
+            name: 'ROLEX Presidencial', 
+            options: [
+                { color: 'Verde Centro Negro Borde Dorado', price: 110000 },
+                { color: 'Azul Centro Azul Borde Dorado', price: 110000 },
+                { color: 'Negro Centro Negro Borde Dorado', price: 110000 },
+                { color: 'Azul Centro Azul', price: 110000 },
+                { color: 'Negro Centro Negro', price: 110000 },
+                { color: 'Verde Centro Verde Borde Dorado', price: 110000 },
+            ]
+        },
+
+        // ========== ROPA (MODAL Ropa 1 a Ropa 13) ==========
+        modalRopa1: {
+            name: 'Camisa 1.1 Moncler', options: [{ color: 'blanco1', price: 90000 }, { color: 'negro1', price: 90000 }, { color: 'blanco2', price: 90000 }, { color: 'negro2', price: 90000 }, { color: 'blanco3', price: 90000 }, { color: 'negro3', price: 90000 }, { color: 'blanco4', price: 90000 }, { color: 'negro4', price: 90000 }, { color: 'negro5', price: 90000 }, { color: 'blanco5', price: 90000 }, { color: 'azul5', price: 90000 }]
+        },
+        modalRopa2: {
+            name: 'Camisa 1.1 Dolce & Gabbana', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }]
+        },
+        modalRopa3: {
+            name: 'Camisa 1.1 Amiri', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }]
+        },
+        modalRopa4: {
+            name: 'Camisa 1.1 Dolce & Gabbana 2', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }]
+        },
+        modalRopa5: {
+            name: 'Camisa Colombia', options: [{ color: 'hombre', price: 90000 }, { color: 'mujer', price: 90000 }]
+        },
+        modalRopa6: {
+            name: 'Camisa 1.1 Esencial', options: [{ color: 'azuloscuro', price: 90000 }, { color: 'marronclaro', price: 90000 }, { color: 'azulclaro', price: 90000 }]
+        },
+        modalRopa7: {
+            name: 'Camisa 1.1 Amiri 2', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }]
+        },
+        modalRopa8: {
+            name: 'Camisa 1.1 Louis Vuitton', options: [{ color: 'negro1', price: 90000 }, { color: 'blanco1', price: 90000 }, { color: 'blanco2', price: 90000 }, { color: 'negro2', price: 90000 }]
+        },
+        modalRopa9: {
+            name: 'Camisa 1.1 Fendi', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }]
+        },
+        modalRopa10: {
+            name: 'Camisa 1.1 Loewe', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }]
+        },
+        modalRopa11: {
+            name: 'Conjunto de Short Importado', options: [{ color: 'negro', price: 85000 }, { color: 'cafe', price: 85000 }, { color: 'blanco', price: 85000 }, { color: 'azuloscuro', price: 85000 }]
+        },
+        modalRopa12: {
+            name: 'Conjunto Texturizado Loewe', options: [{ color: 'negro', price: 100000 }, { color: 'blanco', price: 100000 }, { color: 'cafe', price: 100000 }]
+        },
+        modalRopa13: {
+            name: 'Conjunto de Jeans Full Brillo', options: [{ color: 'blanco', price: 110000 }, { color: 'oscuro', price: 110000 }]
+        }
     };
 
-    // 💾 Estructura para almacenar las selecciones del carrito de compra
-    const cartSelections = [];
+    // =================================================================
+    // 💾 LÓGICA DE PERSISTENCIA (GUARDAR Y CARGAR)
+    // =================================================================
 
-    // FUNCIÓN CLAVE: CALCULA EL TOTAL GENERAL DEL CARRITO
-    function calcularTotalCarrito() {
-        let totalGeneral = 0;
-        cartSelections.forEach(item => {
-            totalGeneral += item.price * item.quantity;
-        });
-        return totalGeneral;
+    function loadCart() {
+        const storedCart = localStorage.getItem('shoppingCart');
+        try {
+            return storedCart ? JSON.parse(storedCart) : [];
+        } catch (e) {
+            console.error("Error al cargar el carrito de localStorage:", e);
+            return [];
+        }
     }
 
-    // 🟢 3. FUNCIÓN MODIFICADA: Ahora muestra el nombre del reloj
-    function crearMensajeCarritoCompleto(totalActual) {
-        let mensajeDetalle = "🛒 **Carrito Actualizado** 🛒\n\n";
+    function saveCart(cart) {
+        localStorage.setItem('shoppingCart', JSON.stringify(cart));
+    }
 
-        if (cartSelections.length === 0) {
-            return "El carrito está vacío.";
+    // 🚨 Nueva función para vaciar el carrito
+    function clearCart() {
+        if (confirm("¿Estás seguro de que quieres vaciar completamente tu carrito de compras?")) {
+            cartSelections = []; // Reinicia la variable de sesión
+            localStorage.removeItem('shoppingCart'); // 🗑️ Elimina los datos guardados
+            alert("✅ ¡El carrito ha sido vaciado!");
         }
+    }
+    
+    // Asignación Inicial
+    let cartSelections = loadCart();
+
+    // --- FUNCIONES DEL CARRITO ---
+    function calcularTotalCarrito() {
+        return cartSelections.reduce((total, item) => total + item.price * item.quantity, 0);
+    }
+
+    function crearMensajeCarritoCompleto(totalActual) {
+        if (cartSelections.length === 0) return "El carrito está vacío.";
         
-        // Itera sobre CADA item en el carrito para listarlos
+        let mensajeDetalle = "🛒 **Carrito Actualizado** 🛒\n\n";
+        
         cartSelections.forEach((item, index) => {
             const subtotalItem = item.price * item.quantity;
-            
-            // Muestra el nombre del reloj (item.name) y el color
             mensajeDetalle += 
                 `${index + 1}. ${item.quantity}x ${item.name} (${item.color})\n` +
                 `   (Subtotal: $${subtotalItem.toLocaleString('es-CO')})\n`;
@@ -607,133 +662,216 @@ document.addEventListener("DOMContentLoaded", () => {
         return mensajeDetalle;
     }
     // -------------------------------------------------------------
+    
+    // =================================================================
+    // LÓGICA DE SELECCIÓN DE COLOR/SLIDER
+    // =================================================================
+    
+    const activeModalColorIndices = {}; 
 
-    for(let i = 1; i <= modalesCount; i++) {
-        const modalId = `modalProducto${i}`;
+    document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("color-btn")) {
+            
+            const colorButton = e.target;
+            const modal = colorButton.closest(".modal");
+            if (!modal) return;
+            
+            const isRopaModal = modal.id.startsWith("modalRopa");
+            const prefix = isRopaModal ? "Ropa" : ""; 
+            const modalId = modal.id;
+
+            const modalIdMatch = modalId.match(/\d+$/); 
+            if (!modalIdMatch) return;
+            const modalNumber = modalIdMatch[0]; 
+
+            const selectedColorText = modal.querySelector(`#selectedColor${prefix}${modalNumber}`); 
+            const colorNameSpan = modal.querySelector(`#colorName${prefix}${modalNumber}`); 
+            const modalContent = colorButton.closest(".modal-content");
+
+            if (selectedColorText && colorNameSpan && modalContent) {
+                
+                let selectedIndex = -1;
+                const allColorButtons = modalContent.querySelectorAll(".color-btn");
+                allColorButtons.forEach((btn, index) => {
+                    if (btn === colorButton) {
+                        selectedIndex = index;
+                    }
+                });
+                
+                activeModalColorIndices[modalId] = selectedIndex; 
+
+                // Aplicar el estilo de borde
+                allColorButtons.forEach(btn => {
+                    btn.style.border = "none";
+                });
+                
+                const backgroundColor = colorButton.style.backgroundColor || colorButton.style.background;
+                const isLightColor = backgroundColor.includes('white') || backgroundColor.includes('yellow') || backgroundColor.includes('burlywood') || backgroundColor.includes('skyblue') || backgroundColor.includes('rgb(255, 255, 255)') || backgroundColor.includes('rgb(197, 197, 197)');
+                
+                if (backgroundColor.includes('gold') || backgroundColor.includes('rgb(248, 203, 56)')) {
+                    colorButton.style.border = "2px solid gold";
+                } else {
+                    colorButton.style.border = isLightColor ? "2px solid black" : "2px solid white";
+                }
+
+                // Cambiar el slide (carrusel)
+                const slides = modal.querySelectorAll(".slide");
+                slides.forEach((slide, idx) => {
+                    slide.classList.toggle("active", idx === selectedIndex);
+                });
+
+                // Mostrar el texto del color
+                selectedColorText.style.display = "block";
+                colorNameSpan.textContent = colorButton.title;
+            }
+        }
+    });
+
+    // --- BUCLE DE INICIALIZACIÓN ---
+    for(let i = 1; i <= modalesCountRelojes; i++) {
+        setupModal(`modalProducto${i}`, i, ""); 
+    }
+    
+    for(let i = 1; i <= modalesCountRopa; i++) {
+        setupModal(`modalRopa${i}`, i, "Ropa"); 
+    }
+
+    // 💡 FUNCIÓN UNIFICADA para inicializar Modales
+    function setupModal(modalId, index, prefix) {
         const modal = document.getElementById(modalId);
-        if (!modal) continue;
-
+        if (!modal) return;
+        
         const closeBtn = modal.querySelector(".close-btn");
         const colorButtons = modal.querySelectorAll(".color-btn");
         const slides = modal.querySelectorAll(".slide");
-        const sumarBtn = modal.querySelector(`#sumar${i}`);
-        const restarBtn = modal.querySelector(`#restar${i}`);
-        const cantidadInput = modal.querySelector(`#cantidad${i}`);
-        const agregarCarritoModalBtn = modal.querySelector(`#agregarCarritoModal${i}`);
         
-        // --- Variables de Color (Necesarias para la funcionalidad de colores) ---
-        const selectedColorText = modal.querySelector(`#selectedColor${i}`);
-        const colorNameSpan = modal.querySelector(`#colorName${i}`);
-        // ------------------------------------------------------------------------
+        const sumarBtn = modal.querySelector(`#sumar${prefix}${index}`);
+        const restarBtn = modal.querySelector(`#restar${prefix}${index}`);
+        const cantidadInput = modal.querySelector(`#cantidad${prefix}${index}`);
+        const agregarCarritoModalBtn = modal.querySelector(`#agregarCarritoModal${prefix}${index}`);
+        
+        const selectedColorText = modal.querySelector(`#selectedColor${prefix}${index}`);
+        const colorNameSpan = modal.querySelector(`#colorName${prefix}${index}`);
 
-        let selectedColorIndex = -1;
-        cantidadInput.value = 0;
-
-        function setActive(index) {
+        activeModalColorIndices[modalId] = 0;
+        
+        function setActive(i) {
             slides.forEach((slide, idx) => {
-                slide.classList.toggle("active", idx === index);
+                slide.classList.toggle("active", idx === i);
             });
             colorButtons.forEach((btn, idx) => {
-                btn.classList.toggle("active", idx === index);
+                btn.classList.remove("active");
+                btn.style.border = "none";
+                
+                if (idx === i) {
+                    btn.classList.add("active");
+                    const backgroundColor = btn.style.backgroundColor || btn.style.background;
+                    const isLightColor = backgroundColor.includes('white') || backgroundColor.includes('yellow') || backgroundColor.includes('burlywood') || backgroundColor.includes('skyblue') || backgroundColor.includes('rgb(255, 255, 255)') || backgroundColor.includes('rgb(197, 197, 197)');
+                    
+                    if (backgroundColor.includes('gold') || backgroundColor.includes('rgb(248, 203, 56)')) {
+                        btn.style.border = "2px solid gold";
+                    } else {
+                        btn.style.border = isLightColor ? "2px solid black" : "2px solid white";
+                    }
+                }
             });
-            selectedColorIndex = index;
+            activeModalColorIndices[modalId] = i; 
+            
+            if (i === 0 && colorButtons.length > 0) {
+                 if (selectedColorText) selectedColorText.style.display = "none";
+                 if (colorNameSpan) colorNameSpan.textContent = colorButtons[0].title;
+            }
+        }
+        
+        // Configuración inicial al cargar la página
+        if (cantidadInput) cantidadInput.value = 1; 
+        setActive(0); // Selecciona la primera opción al cargar
+        if (selectedColorText) selectedColorText.style.display = "none";
+        
+        // --- Eventos de Apertura y Cierre ---
+        
+        document.querySelectorAll(`.btn-add-cart[data-modal="${modalId}"]`).forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault(); 
+                modal.style.display = "flex";
+                
+                if (cantidadInput) cantidadInput.value = 1; 
+                
+                if (selectedColorText) selectedColorText.style.display = "none";
+                
+                if (colorNameSpan && colorButtons.length > 0) {
+                    colorNameSpan.textContent = colorButtons[0].title;
+                }
+            });
+        });
+        
+        if (closeBtn) {
+            closeBtn.addEventListener("click", () => {
+                modal.style.display = "none";
+            });
         }
 
-        // --- Abrir Modal ---
-        document.querySelectorAll(`.btn-add-cart[data-modal="${modalId}"]`).forEach(btn => {
-            btn.addEventListener("click", () => {
-                modal.style.display = "flex";
-                cantidadInput.value = 0; 
-                setActive(0); 
-                if (selectedColorText) { // Oculta el color al abrir
-                    selectedColorText.style.display = "none";
-                }
-            });
-        });
-
-        // --- Cerrar Modal ---
-        closeBtn.addEventListener("click", () => {
-            modal.style.display = "none";
-        });
-
         window.addEventListener("click", (e) => {
-            if(e.target === modal) {
-                modal.style.display = "none";
-            }
+            if(e.target === modal) modal.style.display = "none";
         });
 
-        // --- Seleccionar Color ---
-        colorButtons.forEach((btn, index) => {
-            btn.addEventListener("click", () => {
-                setActive(index);
-                if (selectedColorText && colorNameSpan) { // Muestra el color al seleccionar
-                    selectedColorText.style.display = "block";
-                    colorNameSpan.textContent = btn.title;
+        // --- Eventos de Cantidad ---
+        if (sumarBtn && restarBtn && cantidadInput) {
+            sumarBtn.addEventListener("click", () => {
+                cantidadInput.value = parseInt(cantidadInput.value) + 1;
+            });
+            restarBtn.addEventListener("click", () => {
+                let val = parseInt(cantidadInput.value);
+                if (val > 1) { 
+                    cantidadInput.value = val - 1;
                 }
             });
-        });
-
-        // --- Modificar Cantidad ---
-        sumarBtn.addEventListener("click", () => {
-            if (selectedColorIndex !== -1) {
-                cantidadInput.value = parseInt(cantidadInput.value) + 1;
-            }
-        });
-
-        restarBtn.addEventListener("click", () => {
-            let val = parseInt(cantidadInput.value);
-            if (val > 0) { 
-                cantidadInput.value = val - 1;
-            }
-        });
-
-        // --- Agregar al Carrito (Mostrar Alerta con lista completa) ---
-        agregarCarritoModalBtn.addEventListener("click", () => {
-            const cantidad = parseInt(cantidadInput.value);
-            const modalId = `modalProducto${i}`; // Obtiene el ID dinámico
-
-            if (selectedColorIndex !== -1 && cantidad > 0) {
+        }
+        
+        // --- Agregar al Carrito ---
+        if (agregarCarritoModalBtn && cantidadInput) {
+            agregarCarritoModalBtn.addEventListener("click", () => {
+                const cantidad = parseInt(cantidadInput.value);
+                const selectedColorIndex = activeModalColorIndices[modalId]; 
                 
-                // 🟢 2. MODIFICACIÓN: Accede a la nueva estructura para obtener nombre y opciones
-                const productObject = productData[modalId]; 
-                const productOptions = productObject ? productObject.options : null;
-                const productName = productObject ? productObject.name : "Reloj Desconocido";
+                if (selectedColorIndex !== -1 && cantidad > 0) {
+                    const productObject = productData[modalId]; 
+                    const selectedOption = productObject ? productObject.options[selectedColorIndex] : null;
 
-                const selectedOption = productOptions ? productOptions[selectedColorIndex] : null;
+                    if (selectedOption) {
+                        const item = {
+                            productId: modalId,
+                            name: productObject.name, 
+                            color: selectedOption.color,
+                            price: selectedOption.price,
+                            quantity: cantidad
+                        };
+                        
+                        cartSelections.push(item);
+                        saveCart(cartSelections);
+                        
+                        alert(crearMensajeCarritoCompleto(calcularTotalCarrito())); 
 
-                if (selectedOption) {
-                    const subtotal = selectedOption.price * cantidad;
-                    
-                    // 2. Crear y guardar el ítem (incluye el nombre)
-                    const item = {
-                        productId: modalId,
-                        name: productName, // 🟢 Añadido el nombre
-                        color: selectedOption.color,
-                        price: selectedOption.price,
-                        quantity: cantidad,
-                        subtotal: subtotal
-                    };
-                    cartSelections.push(item);
-
-                    // 3. Calcular y mostrar la alerta
-                    const totalActual = calcularTotalCarrito();
-                    const mensajeAlerta = crearMensajeCarritoCompleto(totalActual);
-                    
-                    alert(mensajeAlerta); 
-
-                    // Resetear y cerrar
-                    cantidadInput.value = 0;
-                    if (selectedColorText) selectedColorText.style.display = "none"; 
-                    
+                        cantidadInput.value = 1; 
+                        
+                    } else {
+                        alert("Error: No se encontró la opción de color seleccionada.");
+                    }
+                } else if (cantidad === 0) {
+                    alert("Por favor, selecciona una cantidad mayor a cero.");
                 } else {
-                    alert("Error: No se encontró la información del producto.");
+                    alert("Por favor, selecciona un color."); 
                 }
-            } else if (cantidad === 0) {
-                alert("Por favor, selecciona una cantidad mayor a cero.");
-            } else {
-                alert("Por favor, selecciona un color.");
-            }
-        });
+            });
+        }
+    } // Fin de setupModal
+    
+    // =================================================================
+    // 🚨 EVENTO PARA EL BOTÓN DE VACIAR CARRITO
+    // =================================================================
+    const vaciarBtn = document.getElementById('vaciarCarritoBtn');
+    if (vaciarBtn) {
+        vaciarBtn.addEventListener('click', clearCart);
     }
 });
 </script>
