@@ -12,16 +12,13 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // Importaciones de Firestore y Storage
         import { getFirestore, doc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js"; // 💡 Agregado Storage
-        
-        // Variables Globales Proporcionadas por Canvas (o simuladas)
+        import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";          
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        let db, auth, userId, storage; // 💡 Agregado storage
+        let db, auth, userId, storage; 
 
         async function initFirebase() {
             try {
@@ -33,7 +30,7 @@
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
-                storage = getStorage(app); // 💡 Inicializando Storage
+                storage = getStorage(app); 
 
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
@@ -61,9 +58,9 @@
     /* GLOBAL & BACKGROUND */
     /* ------------------------------------------------------------------- */
     body { 
-        font-family: 'Inter', sans-serif; /* Fuente moderna y legible */
-        background-color: #f7f7f7; /* Fondo gris muy claro (más profesional que el amarillo) */
-        color: #333; /* Color de texto oscuro para un buen contraste */
+        font-family: 'Inter', sans-serif; 
+        background-color: #f7f7f7; 
+        color: #333; 
     }
     
     /* ------------------------------------------------------------------- */
@@ -77,19 +74,19 @@
         width: 100%;
         height: 100%;
         overflow-y: auto; 
-        background-color: rgba(0, 0, 0, 0.7); /* Fondo más oscuro para enfoque */
+        background-color: rgba(0, 0, 0, 0.7);
         display: flex; 
         justify-content: center;
         align-items: flex-start;
-        padding: 20px 10px; /* Más padding vertical, menos horizontal en móviles */
+        padding: 20px 10px;
     }
     
     #checkoutModal .modal-content {
         background-color: #ffffff;
-        padding: 25px; /* Ligeramente menos padding para móviles */
-        border-radius: 16px; /* Bordes más redondeados y modernos */
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35); /* Sombra más pronunciada y elegante */
-        width: 100%; /* Ocupa todo el ancho en móvil */
+        padding: 25px; 
+        border-radius: 16px; 
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35); 
+        width: 100%; 
         max-width: 600px;
         display: flex;
         flex-direction: column;
@@ -110,12 +107,12 @@
         position: absolute; 
         top: 15px; 
         right: 20px; 
-        font-size: 32px; /* Más grande */
+        font-size: 32px; 
         font-weight: normal; 
         cursor: pointer; 
         transition: color 0.3s ease, transform 0.3s ease; 
     }
-    .close-btn:hover { color: #333; transform: rotate(90deg); } /* Efecto hover moderno */
+    .close-btn:hover { color: #333; transform: rotate(90deg); } 
 
     /* ------------------------------------------------------------------- */
     /* CHECKOUT STEPS & INDICATORS */
@@ -134,13 +131,13 @@
         text-align: center; 
         font-weight: 600; 
         color: #a1a1a1; 
-        border-bottom: 4px solid #e0e0e0; /* Borde más grueso y claro */
+        border-bottom: 4px solid #e0e0e0; 
         padding-bottom: 10px; 
-        font-size: 0.85rem; /* Fuente más pequeña para que quepa en móvil (RESPONSIVE) */
+        font-size: 0.85rem; 
         transition: all 0.3s ease; 
     }
     .step-indicator > div.active { 
-        color: #1e3a8a; /* Azul oscuro elegante */ 
+        color: #1e3a8a; 
         border-bottom-color: #1e3a8a; 
     }
     
@@ -155,7 +152,6 @@
         cursor: pointer; 
         transition: all 0.3s ease; 
         background-color: #ffffff; 
-        /* Usamos flex para mejor control en el diseño del QR */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -166,14 +162,11 @@
         background-color: #f8faff; 
     }
     .qr-option.selected { 
-        border-color: #10b981; /* Verde esmeralda para destacar la selección */ 
+        border-color: #10b981; 
         background-color: #f0fff8; 
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); /* Anillo sutil */
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); 
     }
 
-    /* ------------------------------------------------------------------- */
-    /* OTRAS REGLAS MANTENIDAS */
-    /* ------------------------------------------------------------------- */
     .producto-glasses, .info-glasses { flex: 1; padding: 0 15px; }
     .slider { overflow: hidden; position: relative; height: 300px; }
     .slide { display: none; }
@@ -265,15 +258,15 @@
                             <span class="font-bold text-pink-600 flex items-center gap-2">Nequi</span>
                             <i data-lucide="check-circle" class="text-green-500 hidden payment-check"></i>
                         </div>
-                        <img src="images/mono.jpg" alt="QR Nequi" class="qr-image mt-2 hidden mx-auto rounded-lg shadow-md">
+                        <img src="images/nequi.jpg" alt="QR Nequi" class="qr-image mt-2 hidden mx-auto rounded-lg shadow-md">
                     </div>
                     
-                    <div class="qr-option" data-method="bancolombia">
+                    <div class="qr-option" data-method="Daviplata">
                         <div class="flex items-center justify-between">
-                            <span class="font-bold text-yellow-600 flex items-center gap-2">Bancolombia</span>
+                            <span class="font-bold text-yellow-600 flex items-center gap-2">Daviplata</span>
                             <i data-lucide="check-circle" class="text-green-500 hidden payment-check"></i>
                         </div>
-                        <img src="images/mono.jpg" alt="QR Bancolombia" class="qr-image mt-2 hidden mx-auto rounded-lg shadow-md">
+                        <img src="images/daviplata.jpg" alt="QR Daviplata" class="qr-image mt-2 hidden mx-auto rounded-lg shadow-md">
                     </div>
                 </div>
 
@@ -316,15 +309,12 @@
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
 
-            // --- VARIABLES DE ESTADO Y CONFIGURACIÓN ---
             const modalesCountRelojes = 6;
             const modalesCountRopa = 13; 
             let db, userId, storage;
 
-            // 💡 TRADUCCIÓN: orderState a estadoPedido
             let estadoPedido = { cliente: {}, costoEnvio: 0, subtotal: 0, totalFinal: 0, metodoPago: null, orderId: null };
 
-            // 🟢 ESTRUCTURA PRINCIPAL: Datos de TODOS los productos (Mantenidos)
             const productData = {
                 modalProducto1: { name: 'INVICTA Caballero (Silicona)', type: 'Reloj', options: [{ color: 'Blanco', price: 100000 }, { color: 'Azul', price: 100000 }, { color: 'Negro centro azul', price: 100000 }, { color: 'Negro centro negro', price: 100000 }, { color: 'Negro centro blanco', price: 100000 }] },
                 modalProducto2: { name: 'INVICTA Caballero (Pulso en silicona)', type: 'Reloj', options: [{ color: 'Dorado', price: 175000 }, { color: 'Bronce', price: 175000 }] }, 
@@ -347,9 +337,7 @@
                 modalRopa13: { name: 'Conjunto de Jeans Full Brillo', type: 'Ropa', options: [{ color: 'blanco', price: 110000 }, { color: 'oscuro', price: 110000 }] }
             };
 
-            // =================================================================
-            // 💡 FUNCIONES DE UTILIDAD (ALERTAS Y PERSISTENCIA)
-            // =================================================================
+
             const formatCurrency = (amount) => `$${amount.toLocaleString('es-CO')} COP`;
 
             function showMessage(text, isError = false) {
@@ -375,14 +363,8 @@
                 return cartSelections.reduce((total, item) => total + item.price * item.quantity, 0);
             }
 
-            // =================================================================
-            // 📦 LÓGICA DE COTIZACIÓN DE ENVÍO (FIJA)
-            // =================================================================
-            
-            // 💡 Costo de envío fijo simulado de $15.300 COP
             const COSTO_ENVIO_FIJO_SIMULADO = 15300; 
 
-            // 💡 Lógica de cotización fija
             function cotizarEnvioFijo() {
                 return { 
                     costo: COSTO_ENVIO_FIJO_SIMULADO, 
@@ -391,9 +373,6 @@
             }
 
 
-            // =================================================================
-            // 📦 LÓGICA DE FIREBASE Y DATA (MODIFICADA PARA USAR STORAGE)
-            // =================================================================
 
             async function uploadScreenshotAndGetUrl(file) {
                 if (!file || !storage) return null;
@@ -428,9 +407,8 @@
                         productos: cartSelections.map(item => ({
                             name: item.name, color: item.color, price: item.price, quantity: item.quantity
                         })),
-                        costoEnvioSimulado: estadoPedido.costoEnvio, // Se almacena el costo simulado del envío
+                        costoEnvioSimulado: estadoPedido.costoEnvio, 
                         subtotal: estadoPedido.subtotal,
-                        // El totalFinal en 'estadoPedido' ya NO incluye el envío (solo subtotal)
                         totalATransferir: estadoPedido.totalFinal, 
                         metodoPago: estadoPedido.metodoPago,
                         
@@ -459,9 +437,7 @@
             }
 
 
-            // =================================================================
-            // 🛒 LÓGICA DEL CHECKOUT MODAL 
-            // =================================================================
+
 
             const checkoutModal = document.getElementById('checkoutModal');
             const closeCheckoutBtn = document.getElementById('closeCheckoutBtn');
@@ -486,9 +462,7 @@
 
                 document.querySelector('.step-indicator').style.display = step < 4 ? 'flex' : 'none';
 
-                // Si estamos en el paso 2, actualizamos el texto del total
                 if (step === 2) {
-                     // 💡 Se cambia el nombre del label del total a transferir
                     document.querySelector('#step2 .font-extrabold > span:first-child').textContent = 'SUBTOTAL A TRANSFERIR';
                 }
             }
@@ -567,12 +541,10 @@
                 });
             }
 
-            // --- LISTENERS DE PASOS ---
             document.getElementById('nextToStep2').addEventListener('click', () => {
                 if (cartSelections.length === 0) { showMessage("El carrito está vacío.", true); return; }
                 if (!addressForm.checkValidity()) { showMessage("Completa todos los campos de la dirección.", true); addressForm.reportValidity(); return; }
 
-                // Lectura de los datos del cliente
                 estadoPedido.cliente = {
                     name: document.getElementById('clientName').value,
                     phone: document.getElementById('clientPhone').value,
@@ -581,16 +553,14 @@
                     address: document.getElementById('clientAddress').value,
                 };
                 
-                // Cálculo de la cotización fija
                 const cotizacion = cotizarEnvioFijo();
                 const costoEnvio = cotizacion.costo;
 
                 estadoPedido.costoEnvio = costoEnvio;
-                // 💡 CAMBIO: El total final es ahora SÓLO el subtotal de productos
                 estadoPedido.totalFinal = estadoPedido.subtotal; 
                 
                 document.getElementById('displayShippingCost').textContent = formatCurrency(costoEnvio);
-                document.getElementById('displayFinalTotal').textContent = formatCurrency(estadoPedido.totalFinal); // Muestra sólo el Subtotal
+                document.getElementById('displayFinalTotal').textContent = formatCurrency(estadoPedido.totalFinal); 
 
                 document.getElementById('shippingQuoteResult').innerHTML = `
                     <p class="text-lg font-bold text-blue-700">Costo de Envío Estimado (Aproximado):</p>
@@ -610,9 +580,6 @@
             document.getElementById('backToStep1').addEventListener('click', () => setStep(1));
             document.getElementById('backToStep2').addEventListener('click', () => setStep(2));
             
-            // =================================================================
-            // ✅ LÓGICA DE SELECCIÓN DE PAGO Y QR 
-            // =================================================================
 
             document.querySelectorAll('.qr-option').forEach(option => {
                 option.addEventListener('click', function() {
@@ -652,7 +619,6 @@
                 confirmOrderBtn.textContent = 'Confirmar Orden';
             });
             
-            // Vaciar y reiniciar (Mantenido)
             vaciarCarritoBtn.addEventListener('click', () => {
                  const modal = document.getElementById('checkoutModal');
                  const tempConfirm = createCustomConfirm('¿Vaciar carrito y volver al catálogo?', () => {
@@ -666,23 +632,17 @@
                 modal.appendChild(tempConfirm);
             });
 
-            // Cerrar Modal y Volver
             closeCheckoutBtn.addEventListener('click', () => { 
                 window.history.back(); 
             });
 
-            // Botón de Regresar en la confirmación
             document.getElementById('closeAndReturnBtn').addEventListener('click', () => { 
                 window.history.back(); 
             });
 
-            // Carga inicial
             renderCartSummary();
             setStep(1);
 
-            // =================================================================
-            // 🚨 LÓGICA DE MODALES DE PRODUCTO (Mantenida)
-            // =================================================================
             const activeModalColorIndices = {}; 
             for(let i = 1; i <= modalesCountRelojes; i++) { setupModal(`modalProducto${i}`, i, ""); }
             for(let i = 1; i <= modalesCountRopa; i++) { setupModal(`modalRopa${i}`, i, "Ropa"); }
