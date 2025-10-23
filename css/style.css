@@ -1239,3 +1239,42 @@ html, body {
     /* Nota: 'width: 100%' en body podría ser 'min-width: 100%' en algunos casos, 
        pero 'overflow-x: hidden' es la clave. */
 }
+
+
+/* Necesitas la definición de Tailwind para los colores (bg-red-500, etc) */
+
+/* Botón Flotante del Carrito (Usa el ID 'openCartLink' ahora) */
+#openCartLink {
+    /* Mismos estilos que antes, pero para el <a> */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 50;
+    background-color: #2563eb; /* Color de fondo del botón */
+    color: white; /* Color del icono */
+}
+#openCartLink:hover {
+    background-color: #1d4ed8; /* Color de fondo al pasar el ratón */
+}
+
+#cartItemCount {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ef4444; /* Rojo */
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 50%;
+    min-width: 20px;
+    text-align: center;
+    line-height: 1;
+}
