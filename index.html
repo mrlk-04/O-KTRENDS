@@ -217,6 +217,59 @@
       <!-- google map js -->
       <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8eaHt9Dh5H57Zh0xVTqxVdBFCvFMqFjQ&callback=initMap"></script>
       <!-- end google map js --> 
+
+
+
+      <a id="openCartLink" href="carritodecompras.html" class="transition ease-in-out duration-300 hover:scale-110">
+    <span id="cartItemCount" class="bg-red-500 hover:bg-red-600">0</span>
+    <i data-lucide="shopping-cart" class="w-7 h-7"></i>
+</a>
+
+// Asegúrate de incluir la librería Lucide si usas los iconos:
+// <script src="https://unpkg.com/lucide@latest"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // Función de Persistencia de Carga del Carrito
+    function loadCart() {
+        const storedCart = localStorage.getItem('shoppingCart');
+        try {
+            return storedCart ? JSON.parse(storedCart) : [];
+        } catch (e) {
+            console.error("Error al cargar el carrito de localStorage:", e);
+            return [];
+        }
+    }
+
+    // Función para actualizar el contador
+    function updateCartBadge() {
+        const cartSelections = loadCart();
+        const totalItems = cartSelections.reduce((count, item) => count + item.quantity, 0);
+        const badge = document.getElementById('cartItemCount');
+        
+        if (badge) {
+            badge.textContent = totalItems;
+            // Muestra/Oculta el contador si hay ítems
+            badge.style.display = totalItems > 0 ? 'block' : 'none';
+        }
+    }
+    
+    // Inicializar iconos de Lucide (si está enlazado)
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+    }
+
+    // Actualizar el contador al cargar la página
+    updateCartBadge();
+    
+    // Opcional: Escucha el almacenamiento local para actualizar el contador en tiempo real
+    window.addEventListener('storage', updateCartBadge);
+});
+</script>
+
+
+
    </body>
 </html>
 
