@@ -1277,3 +1277,62 @@ html, body {
     text-align: center;
     line-height: 1;
 }
+
+
+.product-filters {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    /* Reducimos el margen superior a 0 para pegarlo al texto "distinción" */
+    margin: 0px 0 30px 0; 
+    padding: 10px;
+}
+
+/* CLASES DE ESTILO BASE DEL BOTÓN */
+.filter-btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    /* Hacemos la transición para 'all' para incluir el movimiento de subida */
+    transition: all 0.2s ease-out; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    transform: translateY(0); /* Posición normal (No encogido) */
+}
+
+/* ESTILO PARA EL BOTÓN ACTIVO (SELECCIONADO) */
+/* ESTA ES LA REGLA QUE CREA EL EFECTO DE ELEVACIÓN Y SELECCIÓN */
+.filter-btn.active {
+    /* CLAVE: Esto sube el botón 5 píxeles */
+    transform: translateY(-5px); 
+    
+    /* Le damos una sombra más profunda para el efecto 3D */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); 
+    
+    /* Borde blanco para resaltar aún más */
+    outline: 4px solid rgba(255, 255, 255, 0.8); 
+    opacity: 1;
+    
+    /* Quitamos el puntero para que se note que ya está seleccionado */
+    pointer-events: none; 
+}
+
+/* Estilos de Color - Se mantienen igual */
+.primary-filter {
+    background-color: #3b82f6;
+    color: white;
+}
+.primary-filter:hover {
+    background-color: #2563eb;
+    transform: translateY(-5px); 
+}
+
+.secondary-filter {
+    background-color: #f472b6; 
+    color: white;
+}
+.secondary-filter:hover {
+    background-color: #ec4899;
+    transform: translateY(-5px);
+}
