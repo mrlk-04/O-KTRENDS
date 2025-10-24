@@ -51,8 +51,12 @@
                                  <a class="nav-link" href="glasses.html">Relojes</a>
                               </li>     
                               
-                              <li class="nav-item  active">
+                              <li class="nav-item active">
                                  <a class="nav-link" href="glasses2.html">Ropa</a>
+                              </li>
+
+                              <li class="nav-item">
+                                 <a class="nav-link" href="joyas.html">Joyas</a>
                               </li>
                             
 
@@ -67,7 +71,8 @@
 
 
 
-<div class="glasses"> <div class="container">
+<div class="glasses"> 
+    <div class="container">
         <div class="row">
             <div class="col-md-10 offset-md-1">
                 <div class="titlepage">
@@ -75,131 +80,208 @@
                     <p>Cada prenda de nuestra colección está seleccionada para reflejar estilo, calidad y la máxima comodidad, garantizando que siempre destaques con elegancia y distinción.</p>
                 </div>
             </div>
+        </div> 
+       <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="product-filters">
+                    <button id="btn-hombre-unisex" class="filter-btn primary-filter">
+                        HOMBRE / UNISEX
+                    </button>
+
+                    <button id="btn-mujer-unisex" class="filter-btn secondary-filter">
+                        MUJER / UNISEX
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="container-fluid">
-        <div class="row">
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    
+    
+    const allProducts = document.querySelectorAll('.category-product'); 
+    
+    const btnHombreUnisex = document.getElementById('btn-hombre-unisex');
+    const btnMujerUnisex = document.getElementById('btn-mujer-unisex');
 
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/camisas venta/1/portada.jpg" alt="Camisa Moncler" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>90.000 COP</h3>
-                    <p>Camisa 1.1 Moncler</p>
-                    <button class="btn-add-cart" data-modal="modalRopa1">Añadir al carrito</button>
-                </div>
+    const PRODUCTOS_HOMBRE = [1, 2, 3, 4, 6, 7, 8, 9, 10]; 
+    const PRODUCTOS_MUJER = [11, 12, 13];
+    const PRODUCTOS_UNISEX = [5];
+
+
+    function filterProducts(genderToShow) {
+        if (allProducts.length === 0) return; 
+        
+        allProducts.forEach(product => {
+            
+            const isUnisex = product.classList.contains('categoria-unisex');
+            let isVisible = false;
+
+            if (genderToShow === 'hombre') {
+                if (product.classList.contains('categoria-hombre') || isUnisex) {
+                    isVisible = true;
+                }
+            } else if (genderToShow === 'mujer') {
+                if (product.classList.contains('categoria-mujer') || isUnisex) {
+                    isVisible = true;
+                }
+            }
+            
+
+            product.style.display = isVisible ? '' : 'none'; 
+        });
+    }
+
+
+
+    if (btnHombreUnisex) {
+        btnHombreUnisex.addEventListener('click', () => {
+            filterProducts('hombre');
+            btnHombreUnisex.classList.add('active');
+            btnMujerUnisex.classList.remove('active'); 
+        });
+    }
+
+    if (btnMujerUnisex) {
+        btnMujerUnisex.addEventListener('click', () => {
+            filterProducts('mujer');
+            btnMujerUnisex.classList.add('active');
+            btnHombreUnisex.classList.remove('active');
+        });
+    }
+
+    
+        if (btnHombreUnisex) {
+           
+            btnHombreUnisex.click(); 
+        }
+});
+</script>
+
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-hombre">
+            <div class="glasses_box">
+                <figure><img src="images/camisas venta/1/portada.jpg" alt="Camisa Moncler" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>90.000 COP</h3>
+                <p>Camisa 1.1 Moncler</p>
+                <button class="btn-add-cart" data-modal="modalRopa1">Añadir al carrito</button>
             </div>
-
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/camisas venta/2/portada.jpg" alt="Camisa D&G 1" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>90.000 COP</h3>
-                    <p>Camisa 1.1 Dolce & Gabbana</p>
-                    <button class="btn-add-cart" data-modal="modalRopa2">Añadir al carrito</button>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/camisas venta/3/portada.jpg" alt="Camisa Amiri 1" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>90.000 COP</h3>
-                    <p>Camisa 1.1 Amiri</p>
-                    <button class="btn-add-cart" data-modal="modalRopa3">Añadir al carrito</button>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/camisas venta/4/portada.jpg" alt="Camisa D&G 2" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>90.000 COP</h3>
-                    <p>Camisa 1.1 Dolce & Gabbana 2</p>
-                    <button class="btn-add-cart" data-modal="modalRopa4">Añadir al carrito</button>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/camisas venta/5/portada.jpg" alt="Camisa Colombia" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>90.000 COP</h3>
-                    <p>Camisa Colombia</p>
-                    <button class="btn-add-cart" data-modal="modalRopa5">Añadir al carrito</button>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/camisas venta/6/portada.jpeg" alt="Camisa Esencial" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>90.000 COP</h3>
-                    <p>Camisa 1.1 Esencial</p>
-                    <button class="btn-add-cart" data-modal="modalRopa6">Añadir al carrito</button>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/camisas venta/7/portada.jpeg" alt="Camisa Amiri 2" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>90.000 COP</h3>
-                    <p>Camisa 1.1 Amiri 2</p>
-                    <button class="btn-add-cart" data-modal="modalRopa7">Añadir al carrito</button>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/camisas venta/8/portada.jpeg" alt="Camisa Louis Vuitton" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>90.000 COP</h3>
-                    <p>Camisa 1.1 Louis Vuitton</p>
-                    <button class="btn-add-cart" data-modal="modalRopa8">Añadir al carrito</button>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/camisas venta/9/portada.jpeg" alt="Camisa Fendi" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>90.000 COP</h3>
-                    <p>Camisa 1.1 Fendi</p>
-                    <button class="btn-add-cart" data-modal="modalRopa9">Añadir al carrito</button>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/camisas venta/10/portada.jpeg" alt="Camisa Loewe" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>90.000 COP</h3>
-                    <p>Camisa 1.1 Loewe</p>
-                    <button class="btn-add-cart" data-modal="modalRopa10">Añadir al carrito</button>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/mujer venta/1/portada.jpeg" alt="Conjunto Short" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>85.000 COP</h3>
-                    <p>Conjunto de Short Importado</p>
-                    <button class="btn-add-cart" data-modal="modalRopa11">Añadir al carrito</button>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/mujer venta/2/portada.jpeg" alt="Conjunto Loewe" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>100.000 COP</h3>
-                    <p>Conjunto Texturizado Loewe</p>
-                    <button class="btn-add-cart" data-modal="modalRopa12">Añadir al carrito</button>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="glasses_box">
-                    <figure><img src="images/mujer venta/3/portada.jpeg" alt="Jeans Full Brillo" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
-                    <h3><span class="blu">$</span>110.000 COP</h3>
-                    <p>Conjunto de Jeans Full Brillo</p>
-                    <button class="btn-add-cart" data-modal="modalRopa13">Añadir al carrito</button>
-                </div>
-            </div>
-
         </div>
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-hombre">
+            <div class="glasses_box">
+                <figure><img src="images/camisas venta/2/portada.jpg" alt="Camisa D&G 1" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>90.000 COP</h3>
+                <p>Camisa 1.1 Dolce & Gabbana</p>
+                <button class="btn-add-cart" data-modal="modalRopa2">Añadir al carrito</button>
+            </div>
+        </div>
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-hombre">
+            <div class="glasses_box">
+                <figure><img src="images/camisas venta/3/portada.jpg" alt="Camisa Amiri 1" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>90.000 COP</h3>
+                <p>Camisa 1.1 Amiri</p>
+                <button class="btn-add-cart" data-modal="modalRopa3">Añadir al carrito</button>
+            </div>
+        </div>
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-hombre">
+            <div class="glasses_box">
+                <figure><img src="images/camisas venta/4/portada.jpg" alt="Camisa D&G 2" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>90.000 COP</h3>
+                <p>Camisa 1.1 Dolce & Gabbana 2</p>
+                <button class="btn-add-cart" data-modal="modalRopa4">Añadir al carrito</button>
+            </div>
+        </div>
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-unisex">
+            <div class="glasses_box">
+                <figure><img src="images/camisas venta/5/portada.jpg" alt="Camisa Colombia" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>90.000 COP</h3>
+                <p>Camisa Colombia</p>
+                <button class="btn-add-cart" data-modal="modalRopa5">Añadir al carrito</button>
+            </div>
+        </div>
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-hombre">
+            <div class="glasses_box">
+                <figure><img src="images/camisas venta/6/portada.jpeg" alt="Camisa Esencial" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>90.000 COP</h3>
+                <p>Camisa 1.1 Esencial</p>
+                <button class="btn-add-cart" data-modal="modalRopa6">Añadir al carrito</button>
+            </div>
+        </div>
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-hombre">
+            <div class="glasses_box">
+                <figure><img src="images/camisas venta/7/portada.jpeg" alt="Camisa Amiri 2" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>90.000 COP</h3>
+                <p>Camisa 1.1 Amiri 2</p>
+                <button class="btn-add-cart" data-modal="modalRopa7">Añadir al carrito</button>
+            </div>
+        </div>
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-hombre">
+            <div class="glasses_box">
+                <figure><img src="images/camisas venta/8/portada.jpeg" alt="Camisa Louis Vuitton" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>90.000 COP</h3>
+                <p>Camisa 1.1 Louis Vuitton</p>
+                <button class="btn-add-cart" data-modal="modalRopa8">Añadir al carrito</button>
+            </div>
+        </div>
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-hombre">
+            <div class="glasses_box">
+                <figure><img src="images/camisas venta/9/portada.jpeg" alt="Camisa Fendi" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>90.000 COP</h3>
+                <p>Camisa 1.1 Fendi</p>
+                <button class="btn-add-cart" data-modal="modalRopa9">Añadir al carrito</button>
+            </div>
+        </div>
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-hombre">
+            <div class="glasses_box">
+                <figure><img src="images/camisas venta/10/portada.jpeg" alt="Camisa Loewe" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>90.000 COP</h3>
+                <p>Camisa 1.1 Loewe</p>
+                <button class="btn-add-cart" data-modal="modalRopa10">Añadir al carrito</button>
+            </div>
+        </div>
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-mujer">
+            <div class="glasses_box">
+                <figure><img src="images/mujer venta/1/portada.jpeg" alt="Conjunto Short" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>85.000 COP</h3>
+                <p>Conjunto de Short Importado</p>
+                <button class="btn-add-cart" data-modal="modalRopa11">Añadir al carrito</button>
+            </div>
+        </div>
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-mujer">
+            <div class="glasses_box">
+                <figure><img src="images/mujer venta/2/portada.jpeg" alt="Conjunto Loewe" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>100.000 COP</h3>
+                <p>Conjunto Texturizado Loewe</p>
+                <button class="btn-add-cart" data-modal="modalRopa12">Añadir al carrito</button>
+            </div>
+        </div>
+
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 category-product categoria-mujer">
+            <div class="glasses_box">
+                <figure><img src="images/mujer venta/3/portada.jpeg" alt="Jeans Full Brillo" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/></figure>
+                <h3><span class="blu">$</span>110.000 COP</h3>
+                <p>Conjunto de Jeans Full Brillo</p>
+                <button class="btn-add-cart" data-modal="modalRopa13">Añadir al carrito</button>
+            </div>
+        </div>
+
     </div>
+</div>
 </div>
 
 

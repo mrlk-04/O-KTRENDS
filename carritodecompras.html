@@ -162,10 +162,8 @@
                 <input type="text" id="clientName" placeholder="Nombre Completo (Ej: Juan David Díaz Pérez)" required class="w-full p-2 border border-gray-300 rounded-lg">
                 <input type="text" id="clientPhone" placeholder="Teléfono (Ej: 3137549245)" required class="w-full p-2 border border-gray-300 rounded-lg">
 
-                <!-- Input libre para Departamento -->
                 <input type="text" id="clientDepartment" placeholder="Departamento/Estado (Ej: Cundinamarca)" required class="w-full p-2 border border-gray-300 rounded-lg">
 
-                <!-- Input libre para Ciudad -->
                 <input type="text" id="clientCity" placeholder="Ciudad (Ej: Bogotá)" required class="w-full p-2 border border-gray-300 rounded-lg">
 
 
@@ -392,10 +390,10 @@
     
     async function guardarPedidoEnFirestore() {
         if (!firebaseInitialized || !db || !userId || !storage) {
-            showMessage("Error: Conexión a la base de datos no lista. Reintentando...", true);
+            showMessage("Error", true);
             const success = await initFirebaseAndAssignVars(); 
             if (!success) {
-                 showMessage("Error: Falló la conexión final a la base de datos.", true);
+                 showMessage("Error", true);
                  return;
             }
         }
@@ -427,8 +425,8 @@
             setStep(4);
             
         } catch (e) {
-            console.error("🔴 Error al guardar la orden en Firestore:", e);
-            showMessage("Error al guardar la orden: " + e.message, true);
+            console.error("Error al guardar la orden");
+            showMessage("Error al guardar la orden", true);
             document.getElementById('confirmOrderBtn').disabled = false;
         }
     }
@@ -681,9 +679,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             confirmOrderBtn.disabled = screenshotInput.files.length === 0;
         }
         
-        showMessage("✅ Conexión a Firebase lista.", false);
+        showMessage("", false);
     } else {
-        showMessage("🔴 Error crítico: No se pudo conectar a Firebase. El guardado NO funcionará.", true);
+        showMessage("", true);
     }
 
     renderCartSummary();
