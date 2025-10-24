@@ -6,7 +6,7 @@ import { getStorage } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-s
 
 // Tu configuración de Firebase (LA CORRECTA)
 const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyBrf6rvGUALFG-EcSH_FwCAmLiC3BLNFcY",
+    apiKey: "AIzaSyBuwP3oYa-mqpqlL3XXRFlWD3mNPZalRy0",
     authDomain: "o-ktrends.firebaseapp.com",
     projectId: "o-ktrends",
     // 🛑 ARREGLADO: El nombre real del bucket de Storage es este, no el .appspot.com
