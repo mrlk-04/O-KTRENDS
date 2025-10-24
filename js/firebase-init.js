@@ -4,15 +4,16 @@ import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/1
 import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
-// Tu configuración de Firebase usando variables de entorno
+// Tu configuración de Firebase (LA CORRECTA)
 const FIREBASE_CONFIG = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+    apiKey: "AIzaSyBrf6rvGUALFG-EcSH_FwCAmLiC3BLNFcY",
+    authDomain: "o-ktrends.firebaseapp.com",
+    projectId: "o-ktrends",
+    // 🛑 ARREGLADO: El nombre real del bucket de Storage es este, no el .appspot.com
+    storageBucket: "o-ktrends.firebasestorage.app", 
+    messagingSenderId: "606996556956",
+    appId: "1:606996556956:web:a25b5bb59417ca43089159",
+    measurementId: "G-VBCPRH4CLV"
 };
 
 // ----------------------------------------------------
@@ -47,4 +48,3 @@ export async function initFirebase() {
 
 // Exportar las instancias
 export { db, auth, storage, userId };
- 
