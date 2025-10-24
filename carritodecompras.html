@@ -9,56 +9,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";          
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+    
 
-        let db, auth, userId, storage; 
-
-        async function initFirebase() {
-            try {
-                if (Object.keys(firebaseConfig).length === 0) {
-                    console.error("🔴 ERROR: Firebase config no está disponible. El guardado en DB no funcionará.");
-                    return false;
-                }
-                
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                storage = getStorage(app); 
-
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                
-                userId = auth.currentUser?.uid || crypto.randomUUID();
-                console.log(`✅ Firebase inicializado. User ID: ${userId}`);
-
-                document.dispatchEvent(new CustomEvent('firebase-ready', { detail: { db, userId } }));
-                return true;
-
-            } catch (error) {
-                console.error("🔴 ERROR en la inicialización de Firebase:", error);
-                return false;
-            }
-        }
-
-        initFirebase();
-    </script>
 
 <style>
     /* ------------------------------------------------------------------- */
     /* GLOBAL & BACKGROUND */
     /* ------------------------------------------------------------------- */
     body { 
-        font-family: 'Inter', sans-serif; 
+        font-family: 'Inter', sans-serif;
         background-color: #f7f7f7; 
         color: #333; 
     }
@@ -282,15 +241,26 @@
                 </div>
             </div>
             
-            <div id="confirmationMessage" class="step-content text-center">
-                <i data-lucide="check-circle" class="w-16 h-16 text-green-500 mx-auto mb-4"></i>
-                <h3 class="text-2xl font-bold mb-3">¡Orden Confirmada!</h3>
-                <p class="text-gray-700">Tu pedido ha sido registrado con éxito. Pronto nos pondremos en contacto contigo para coordinar el envío.</p>
-                <div class="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
-                    <p class="text-sm font-semibold">ID de la Orden: <span id="orderIdDisplay" class="font-normal text-gray-600">N/A</span></p>
-                </div>
-                <button id="closeAndReturnBtn" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition mt-6 inline-block">Cerrar y Regresar a la Tienda</button>
-            </div>
+<div id="step4" class="step-content text-center hidden"> 
+    <i data-lucide="check-circle" class="w-16 h-16 text-green-500 mx-auto mb-4"></i>
+    <h3 class="text-2xl font-bold mb-3">¡Orden Confirmada!</h3>
+    <p class="text-gray-700">Tu pedido ha sido registrado con éxito. Pronto nos pondremos en contacto contigo para coordinar el envío.</p>
+    
+    <div class="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+        <p class="text-sm font-semibold">ID de la Orden: <span id="orderIdDisplay" class="font-normal text-gray-600">N/A</span></p>
+    </div>
+    
+    <div class="mt-4 p-3 bg-yellow-100 rounded-lg border border-yellow-300">
+        <p class="text-sm font-bold text-yellow-800 flex items-center justify-center">
+            <i data-lucide="camera" class="w-5 h-5 mr-2"></i>
+            IMPORTANTE: ¡Toma una captura de pantalla!
+        </p>
+        <p class="text-xs text-yellow-700 mt-1">Este ID es tu comprobante único.</p>
+    </div>
+
+    <button id="closeAndReturnBtn" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition mt-6 inline-block">Cerrar y Regresar a la Tienda</button>
+</div>
+
 
         </div>
     </div>
@@ -305,356 +275,431 @@
 
 
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            lucide.createIcons();
+<script type="module">
+    import { initFirebase, db as firestoreDb, userId as currentUserId, storage as firebaseStorage } from './js/firebase-init.js';
+    
+    import { addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js"; 
 
-            const modalesCountRelojes = 6;
-            const modalesCountRopa = 13; 
-            let db, userId, storage;
+    let db;
+    let userId; 
+    let storage; 
+    let firebaseInitialized = false; 
 
-            let estadoPedido = { cliente: {}, costoEnvio: 0, subtotal: 0, totalFinal: 0, metodoPago: null, orderId: null };
+    let estadoPedido = { cliente: {}, costoEnvio: 0, subtotal: 0, totalFinal: 0, metodoPago: null, orderId: null };
 
-            const productData = {
-                modalProducto1: { name: 'INVICTA Caballero (Silicona)', type: 'Reloj', options: [{ color: 'Blanco', price: 100000 }, { color: 'Azul', price: 100000 }, { color: 'Negro centro azul', price: 100000 }, { color: 'Negro centro negro', price: 100000 }, { color: 'Negro centro blanco', price: 100000 }] },
-                modalProducto2: { name: 'INVICTA Caballero (Pulso en silicona)', type: 'Reloj', options: [{ color: 'Dorado', price: 175000 }, { color: 'Bronce', price: 175000 }] }, 
-                modalProducto3: { name: 'INVICTA Caballero', type: 'Reloj', options: [{ color: 'Dorado', price: 185000 }, { color: 'Verde', price: 185000 }, { color: 'Negro', price: 185000 }, { color: 'Azul', price: 185000 }] },        
-                modalProducto4: { name: 'Combo Caballero', type: 'Reloj', options: [{ color: 'Negro', price: 65000 }, { color: 'Plateado', price: 65000 }, { color: 'Dorado', price: 65000 }] },
-                modalProducto5: { name: 'Pareja Cartier', type: 'Reloj', options: [{ color: 'Plateado Bronce Centro Blanco', price: 120000 }, { color: 'Plateado Dorado Centro Oscuro', price: 120000 }, { color: 'Plateado Centro Blanco', price: 120000 }, { color: 'Plateado Dorado Centro Negro', price: 120000 }, { color: 'Dorado Centro Negro', price: 120000 }, { color: 'Dorado Centro Blanco', price: 120000 }] },
-                modalProducto6: { name: 'ROLEX Presidencial', type: 'Reloj', options: [{ color: 'Verde Centro Negro Borde Dorado', price: 110000 }, { color: 'Azul Centro Azul Borde Dorado', price: 110000 }, { color: 'Negro Centro Negro Borde Dorado', price: 110000 }, { color: 'Azul Centro Azul', price: 110000 }, { color: 'Negro Centro Negro', price: 110000 }, { color: 'Verde Centro Verde Borde Dorado', price: 110000 }] },
-                modalRopa1: { name: 'Camisa 1.1 Moncler', type: 'Ropa', options: [{ color: 'blanco1', price: 90000 }, { color: 'negro1', price: 90000 }, { color: 'blanco2', price: 90000 }, { color: 'negro2', price: 90000 }, { color: 'blanco3', price: 90000 }, { color: 'negro3', price: 90000 }, { color: 'blanco4', price: 90000 }, { color: 'negro4', price: 90000 }, { color: 'negro5', price: 90000 }, { color: 'blanco5', price: 90000 }, { color: 'azul5', price: 90000 }] },
-                modalRopa2: { name: 'Camisa 1.1 Dolce & Gabbana', type: 'Ropa', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }] },
-                modalRopa3: { name: 'Camisa 1.1 Amiri', type: 'Ropa', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }] },
-                modalRopa4: { name: 'Camisa 1.1 Dolce & Gabbana 2', type: 'Ropa', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }] },
-                modalRopa5: { name: 'Camisa Colombia', type: 'Ropa', options: [{ color: 'hombre', price: 90000 }, { color: 'mujer', price: 90000 }] },
-                modalRopa6: { name: 'Camisa 1.1 Esencial', type: 'Ropa', options: [{ color: 'azuloscuro', price: 90000 }, { color: 'marronclaro', price: 90000 }, { color: 'azulclaro', price: 90000 }] },
-                modalRopa7: { name: 'Camisa 1.1 Amiri 2', type: 'Ropa', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }] },
-                modalRopa8: { name: 'Camisa 1.1 Louis Vuitton', type: 'Ropa', options: [{ color: 'negro1', price: 90000 }, { color: 'blanco1', price: 90000 }, { color: 'blanco2', price: 90000 }, { color: 'negro2', price: 90000 }] },
-                modalRopa9: { name: 'Camisa 1.1 Fendi', type: 'Ropa', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }] },
-                modalRopa10: { name: 'Camisa 1.1 Loewe', type: 'Ropa', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }] },
-                modalRopa11: { name: 'Conjunto de Short Importado', type: 'Ropa', options: [{ color: 'negro', price: 85000 }, { color: 'cafe', price: 85000 }, { color: 'blanco', price: 85000 }, { color: 'azuloscuro', price: 85000 }] },
-                modalRopa12: { name: 'Conjunto Texturizado Loewe', type: 'Ropa', options: [{ color: 'negro', price: 100000 }, { color: 'blanco', price: 100000 }, { color: 'cafe', price: 100000 }] },
-                modalRopa13: { name: 'Conjunto de Jeans Full Brillo', type: 'Ropa', options: [{ color: 'blanco', price: 110000 }, { color: 'oscuro', price: 110000 }] }
+    // -------------------------------------------------------------------
+    // DATOS DE PRODUCTOS (COMPLETOS)
+    // -------------------------------------------------------------------
+    const modalesCountRelojes = 6;
+    const modalesCountRopa = 13; 
+
+    const productData = {
+        modalProducto1: { name: 'INVICTA Caballero (Silicona)', type: 'Reloj', options: [{ color: 'Blanco', price: 100000 }, { color: 'Azul', price: 100000 }, { color: 'Negro centro azul', price: 100000 }, { color: 'Negro centro negro', price: 100000 }, { color: 'Negro centro blanco', price: 100000 }] },
+        modalProducto2: { name: 'INVICTA Caballero (Pulso en silicona)', type: 'Reloj', options: [{ color: 'Dorado', price: 175000 }, { color: 'Bronce', price: 175000 }] }, 
+        modalProducto3: { name: 'INVICTA Caballero', type: 'Reloj', options: [{ color: 'Dorado', price: 185000 }, { color: 'Verde', price: 185000 }, { color: 'Negro', price: 185000 }, { color: 'Azul', price: 185000 }] },      
+        modalProducto4: { name: 'Combo Caballero', type: 'Reloj', options: [{ color: 'Negro', price: 65000 }, { color: 'Plateado', price: 65000 }, { color: 'Dorado', price: 65000 }] },
+        modalProducto5: { name: 'Pareja Cartier', type: 'Reloj', options: [{ color: 'Plateado Bronce Centro Blanco', price: 120000 }, { color: 'Plateado Dorado Centro Oscuro', price: 120000 }, { color: 'Plateado Centro Blanco', price: 120000 }, { color: 'Plateado Dorado Centro Negro', price: 120000 }, { color: 'Dorado Centro Negro', price: 120000 }, { color: 'Dorado Centro Blanco', price: 120000 }] },
+        modalProducto6: { name: 'ROLEX Presidencial', type: 'Reloj', options: [{ color: 'Verde Centro Negro Borde Dorado', price: 110000 }, { color: 'Azul Centro Azul Borde Dorado', price: 110000 }, { color: 'Negro Centro Negro Borde Dorado', price: 110000 }, { color: 'Azul Centro Azul', price: 110000 }, { color: 'Negro Centro Negro', price: 110000 }, { color: 'Verde Centro Verde Borde Dorado', price: 110000 }] },
+        modalRopa1: { name: 'Camisa 1.1 Moncler', type: 'Ropa', options: [{ color: 'blanco1', price: 90000 }, { color: 'negro1', price: 90000 }, { color: 'blanco2', price: 90000 }, { color: 'negro2', price: 90000 }, { color: 'blanco3', price: 90000 }, { color: 'negro3', price: 90000 }, { color: 'blanco4', price: 90000 }, { color: 'negro4', price: 90000 }, { color: 'negro5', price: 90000 }, { color: 'blanco5', price: 90000 }, { color: 'azul5', price: 90000 }] },
+        modalRopa2: { name: 'Camisa 1.1 Dolce & Gabbana', type: 'Ropa', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }] },
+        modalRopa3: { name: 'Camisa 1.1 Amiri', type: 'Ropa', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }] },
+        modalRopa4: { name: 'Camisa 1.1 Dolce & Gabbana 2', type: 'Ropa', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }] },
+        modalRopa5: { name: 'Camisa Colombia', type: 'Ropa', options: [{ color: 'hombre', price: 90000 }, { color: 'mujer', price: 90000 }] },
+        modalRopa6: { name: 'Camisa 1.1 Esencial', type: 'Ropa', options: [{ color: 'azuloscuro', price: 90000 }, { color: 'marronclaro', price: 90000 }, { color: 'azulclaro', price: 90000 }] },
+        modalRopa7: { name: 'Camisa 1.1 Amiri 2', type: 'Ropa', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }] },
+        modalRopa8: { name: 'Camisa 1.1 Louis Vuitton', type: 'Ropa', options: [{ color: 'negro1', price: 90000 }, { color: 'blanco1', price: 90000 }, { color: 'blanco2', price: 90000 }, { color: 'negro2', price: 90000 }] },
+        modalRopa9: { name: 'Camisa 1.1 Fendi', type: 'Ropa', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }] },
+        modalRopa10: { name: 'Camisa 1.1 Loewe', type: 'Ropa', options: [{ color: 'blanco', price: 90000 }, { color: 'negro', price: 90000 }] },
+        modalRopa11: { name: 'Conjunto de Short Importado', type: 'Ropa', options: [{ color: 'negro', price: 85000 }, { color: 'cafe', price: 85000 }, { color: 'blanco', price: 85000 }, { color: 'azuloscuro', price: 85000 }] },
+        modalRopa12: { name: 'Conjunto Texturizado Loewe', type: 'Ropa', options: [{ color: 'negro', price: 100000 }, { color: 'blanco', price: 100000 }, { color: 'cafe', price: 100000 }] },
+        modalRopa13: { name: 'Conjunto de Jeans Full Brillo', type: 'Ropa', options: [{ color: 'blanco', price: 110000 }, { color: 'oscuro', price: 110000 }] }
+    };
+    // -------------------------------------------------------------------
+    // FIN DATOS DE PRODUCTOS
+    // -------------------------------------------------------------------
+
+    const formatCurrency = (amount) => `$${amount.toLocaleString('es-CO')} COP`;
+
+    function showMessage(text, isError = false) {
+        const box = document.getElementById('messageBox');
+        box.textContent = text;
+        box.className = `fixed top-0 left-0 right-0 p-3 text-center transition-all duration-300 transform translate-y-0 z-50 rounded-b-lg ${isError ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`;
+        setTimeout(() => { box.classList.add('-translate-y-full'); }, 3000);
+    }
+
+    function loadCart() {
+        const storedCart = localStorage.getItem('shoppingCart');
+        try { return storedCart ? JSON.parse(storedCart) : []; } catch (e) { return []; }
+    }
+
+    function saveCart(cart) {
+        localStorage.setItem('shoppingCart', JSON.stringify(cart));
+        window.dispatchEvent(new Event('storage')); 
+    }
+
+    let cartSelections = loadCart();
+
+    function calcularTotalCarrito() {
+        return cartSelections.reduce((total, item) => total + item.price * item.quantity, 0);
+    }
+
+    const COSTO_ENVIO_FIJO_SIMULADO = 15300; 
+
+    function cotizarEnvioFijo() {
+        return { 
+            costo: COSTO_ENVIO_FIJO_SIMULADO, 
+            descripcion: 'El costo de envío es aproximado y se paga contra entrega.'
+        };
+    }
+
+    // -------------------------------------------------------------------
+    // FUNCIÓN ÚNICA PARA INICIALIZAR Y ASIGNAR LAS VARIABLES DE FIREBASE
+    // -------------------------------------------------------------------
+    async function initFirebaseAndAssignVars() {
+        const isReady = await initFirebase();
+        if (isReady) {
+            db = firestoreDb;
+            userId = currentUserId;
+            storage = firebaseStorage;
+            firebaseInitialized = true;
+            return true;
+        }
+        return false;
+    }
+
+    // -------------------------------------------------------------------
+    // FUNCIONES DE FIREBASE Y GUARDADO 
+    // -------------------------------------------------------------------
+
+    async function uploadScreenshotAndGetUrl(file) {
+        if (!file || !storage) return null; 
+        
+        const dataUrl = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.readAsDataURL(file);
+        });
+
+        const timestamp = Date.now();
+        const appId = 'o-ktrends'; 
+        const storageRef = ref(storage, `${appId}/${userId}/screenshots/${timestamp}_${file.name}`);
+
+        await uploadString(storageRef, dataUrl, 'data_url');
+        
+        return await getDownloadURL(storageRef);
+    }
+    
+    async function guardarPedidoEnFirestore() {
+        if (!firebaseInitialized || !db || !userId || !storage) {
+            showMessage("Error: Conexión a la base de datos no lista. Reintentando...", true);
+            const success = await initFirebaseAndAssignVars(); 
+            if (!success) {
+                 showMessage("Error: Falló la conexión final a la base de datos.", true);
+                 return;
+            }
+        }
+        
+        try {
+            const screenshotFile = document.getElementById('paymentScreenshot').files[0];
+            const screenshotUrl = await uploadScreenshotAndGetUrl(screenshotFile); 
+            
+            const datosPedido = {
+                cliente: { ...estadoPedido.cliente },
+                productos: cartSelections.map(item => ({ name: item.name, color: item.color, price: item.price, quantity: item.quantity })),
+                costoEnvioSimulado: estadoPedido.costoEnvio, 
+                subtotal: estadoPedido.subtotal,
+                totalATransferir: estadoPedido.totalFinal, 
+                metodoPago: estadoPedido.metodoPago,
+                paymentScreenshotUrl: screenshotUrl, 
+                status: 'PENDIENTE DE REVISIÓN',
+                createdAt: serverTimestamp(),
+                userId: userId,
+                _appId: 'o-ktrends'
             };
 
-
-            const formatCurrency = (amount) => `$${amount.toLocaleString('es-CO')} COP`;
-
-            function showMessage(text, isError = false) {
-                const box = document.getElementById('messageBox');
-                box.textContent = text;
-                box.className = `fixed top-0 left-0 right-0 p-3 text-center transition-all duration-300 transform translate-y-0 z-50 rounded-b-lg ${isError ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`;
-                setTimeout(() => { box.classList.add('-translate-y-full'); }, 3000);
-            }
-
-            function loadCart() {
-                const storedCart = localStorage.getItem('shoppingCart');
-                try { return storedCart ? JSON.parse(storedCart) : []; } catch (e) { return []; }
-            }
-
-            function saveCart(cart) {
-                localStorage.setItem('shoppingCart', JSON.stringify(cart));
-                window.dispatchEvent(new Event('storage')); 
-            }
-
-            let cartSelections = loadCart();
-
-            function calcularTotalCarrito() {
-                return cartSelections.reduce((total, item) => total + item.price * item.quantity, 0);
-            }
-
-            const COSTO_ENVIO_FIJO_SIMULADO = 15300; 
-
-            function cotizarEnvioFijo() {
-                return { 
-                    costo: COSTO_ENVIO_FIJO_SIMULADO, 
-                    descripcion: 'El costo de envío es aproximado y se paga contra entrega.'
-                };
-            }
-
-
-
-            async function uploadScreenshotAndGetUrl(file) {
-                if (!file || !storage) return null;
-                
-                const dataUrl = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.readAsDataURL(file);
-                });
-
-                const timestamp = Date.now();
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                const storageRef = ref(storage, `${appId}/${userId}/screenshots/${timestamp}_${file.name}`);
-
-                await uploadString(storageRef, dataUrl, 'data_url');
-                
-                return await getDownloadURL(storageRef);
-            }
+            const collectionPath = `artifacts/o-ktrends/users/${userId}/orders`;
+            const docRef = await addDoc(collection(db, collectionPath), datosPedido);
             
-            async function guardarPedidoEnFirestore() {
-                if (!db || !userId || !storage) {
-                    showMessage("Error: Conexión a la base de datos no lista. Intenta de nuevo.", true);
-                    return;
-                }
-                
-                try {
-                    const screenshotFile = document.getElementById('paymentScreenshot').files[0];
-                    const screenshotUrl = await uploadScreenshotAndGetUrl(screenshotFile); 
-                    
-                    const datosPedido = {
-                        cliente: { ...estadoPedido.cliente },
-                        productos: cartSelections.map(item => ({
-                            name: item.name, color: item.color, price: item.price, quantity: item.quantity
-                        })),
-                        costoEnvioSimulado: estadoPedido.costoEnvio, 
-                        subtotal: estadoPedido.subtotal,
-                        totalATransferir: estadoPedido.totalFinal, 
-                        metodoPago: estadoPedido.metodoPago,
-                        
-                        paymentScreenshotUrl: screenshotUrl, 
-                        status: 'PENDIENTE DE REVISIÓN',
-                        createdAt: serverTimestamp(),
-                        userId: userId,
-                        _appId: typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'
-                    };
-
-                    const collectionPath = `artifacts/${appId}/users/${userId}/orders`;
-
-                    const docRef = await addDoc(collection(db, collectionPath), datosPedido);
-                    
-                    estadoPedido.orderId = docRef.id;
-                    showMessage(`✅ ¡Orden registrada! ID: ${docRef.id}`, false);
-                    document.getElementById('orderIdDisplay').textContent = docRef.id;
-
-                    setStep(4);
-                    
-                } catch (e) {
-                    console.error("🔴 Error al guardar la orden en Firestore:", e);
-                    showMessage("Error al guardar la orden: " + e.message, true);
-                    document.getElementById('confirmOrderBtn').disabled = false;
-                }
-            }
-
-
-
-
-            const checkoutModal = document.getElementById('checkoutModal');
-            const closeCheckoutBtn = document.getElementById('closeCheckoutBtn');
-            const cartSummaryDiv = document.getElementById('cartSummary');
-            const subtotalProductsSpan = document.getElementById('subtotalProducts');
-            const addressForm = document.getElementById('addressForm');
-            const vaciarCarritoBtn = document.getElementById('vaciarCarritoBtn');
-            const confirmOrderBtn = document.getElementById('confirmOrderBtn');
-
-            let currentStep = 1;
-
-            function setStep(step) {
-                currentStep = step;
-                document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
-                document.querySelectorAll('.step-indicator > div').forEach(el => el.classList.remove('active'));
-
-                document.getElementById(`step${step}`).classList.add('active');
-                if (step < 4) document.getElementById(`stepIndicator${step}`).classList.add('active');
-                
-                const titles = { 1: 'Tu Carrito y Dirección', 2: 'Resumen de la Orden y Envío', 3: 'Finalizar Pago', 4: 'Confirmación de Pedido' };
-                document.getElementById('checkoutTitle').textContent = titles[step] || 'Checkout';
-
-                document.querySelector('.step-indicator').style.display = step < 4 ? 'flex' : 'none';
-
-                if (step === 2) {
-                    document.querySelector('#step2 .font-extrabold > span:first-child').textContent = 'SUBTOTAL A TRANSFERIR';
-                }
-            }
+            estadoPedido.orderId = docRef.id;
+            showMessage(`✅ ¡Orden registrada! ID: ${docRef.id}`, false);
+            document.getElementById('orderIdDisplay').textContent = docRef.id;
+            setStep(4);
             
-            function removeItem(index) {
-                const modal = document.getElementById('checkoutModal');
-                const tempConfirm = createCustomConfirm('¿Estás seguro de que quieres eliminar este producto del carrito?', () => {
-                    cartSelections.splice(index, 1); 
-                    saveCart(cartSelections);
-                    renderCartSummary();
-                    showMessage("Producto eliminado del carrito.", false);
-                    modal.removeChild(tempConfirm);
-                }, () => {
-                    modal.removeChild(tempConfirm);
-                });
-                modal.appendChild(tempConfirm);
-            }
-            
-            function createCustomConfirm(message, onConfirm, onCancel) {
-                const confirmModal = document.createElement('div');
-                confirmModal.className = 'fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[110] p-4';
-                confirmModal.innerHTML = `
-                    <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
-                        <p class="text-lg font-semibold mb-4">${message}</p>
-                        <div class="flex justify-end space-x-3">
-                            <button id="cancelBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
-                            <button id="confirmBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Confirmar</button>
-                        </div>
-                    </div>
-                `;
-                
-                confirmModal.querySelector('#confirmBtn').onclick = onConfirm;
-                confirmModal.querySelector('#cancelBtn').onclick = onCancel;
-                return confirmModal;
-            }
-
-            function renderCartSummary() {
-                cartSelections = loadCart(); 
-
-                const subtotal = calcularTotalCarrito();
-                estadoPedido.subtotal = subtotal; 
-
-                subtotalProductsSpan.textContent = formatCurrency(subtotal);
-                document.getElementById('displaySubtotal2').textContent = formatCurrency(subtotal);
-                
-                if (cartSelections.length === 0) {
-                    cartSummaryDiv.innerHTML = '<p class="text-red-500 text-center py-4 font-bold">⚠️ ¡El carrito está vacío! Agrega productos desde el catálogo.</p>';
-                    document.getElementById('nextToStep2').disabled = true;
-                    if (currentStep > 1) setStep(1); 
-                    return;
-                }
-                
-                document.getElementById('nextToStep2').disabled = false;
-
-                let html = cartSelections.map((item, index) => `
-                    <div class="flex justify-between items-center p-2 border-b last:border-b-0">
-                        <div class="flex flex-col">
-                            <span class="font-semibold">${item.name}</span>
-                            <span class="text-sm text-gray-500">Color: ${item.color} - Cant: ${item.quantity}</span>
-                            <span class="text-sm font-bold">${formatCurrency(item.price * item.quantity)}</span>
-                        </div>
-                        <button class="remove-item-btn text-red-500 hover:text-red-700 p-1 transition" data-index="${index}" title="Eliminar Producto">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                `).join('');
-                
-                cartSummaryDiv.innerHTML = html;
-                lucide.createIcons(); 
-
-                document.querySelectorAll('.remove-item-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const index = parseInt(e.currentTarget.dataset.index);
-                        removeItem(index);
-                    });
-                });
-            }
-
-            document.getElementById('nextToStep2').addEventListener('click', () => {
-                if (cartSelections.length === 0) { showMessage("El carrito está vacío.", true); return; }
-                if (!addressForm.checkValidity()) { showMessage("Completa todos los campos de la dirección.", true); addressForm.reportValidity(); return; }
-
-                estadoPedido.cliente = {
-                    name: document.getElementById('clientName').value,
-                    phone: document.getElementById('clientPhone').value,
-                    department: document.getElementById('clientDepartment').value, 
-                    city: document.getElementById('clientCity').value,
-                    address: document.getElementById('clientAddress').value,
-                };
-                
-                const cotizacion = cotizarEnvioFijo();
-                const costoEnvio = cotizacion.costo;
-
-                estadoPedido.costoEnvio = costoEnvio;
-                estadoPedido.totalFinal = estadoPedido.subtotal; 
-                
-                document.getElementById('displayShippingCost').textContent = formatCurrency(costoEnvio);
-                document.getElementById('displayFinalTotal').textContent = formatCurrency(estadoPedido.totalFinal); 
-
-                document.getElementById('shippingQuoteResult').innerHTML = `
-                    <p class="text-lg font-bold text-blue-700">Costo de Envío Estimado (Aproximado):</p>
-                    <p class="text-2xl">${formatCurrency(costoEnvio)}</p>
-                    <p class="text-sm text-red-600 font-bold mt-2">
-                        🔴 ATENCIÓN: El costo exacto se te notificará al momento de despachar.
-                    </p>
-                    <p class="text-sm text-green-700 mt-1 font-bold">
-                        ✅ El valor del envío real <strong>(aproximado a ${formatCurrency(costoEnvio)})</strong> se paga al momento de recibir el producto (contra entrega).
-                    </p>
-                `;
-
-                setStep(2);
-            });
-
-            document.getElementById('nextToStep3').addEventListener('click', () => { setStep(3); });
-            document.getElementById('backToStep1').addEventListener('click', () => setStep(1));
-            document.getElementById('backToStep2').addEventListener('click', () => setStep(2));
-            
-
-            document.querySelectorAll('.qr-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    document.querySelectorAll('.qr-option').forEach(opt => {
-                        opt.classList.remove('selected');
-                        opt.querySelector('.payment-check').classList.add('hidden');
-                        opt.querySelector('.qr-image').classList.add('hidden');
-                    });
-
-                    this.classList.add('selected');
-                    this.querySelector('.payment-check').classList.remove('hidden');
-                    this.querySelector('.qr-image').classList.remove('hidden');
-
-                    document.getElementById('paymentUploadSection').classList.remove('hidden');
-                    
-                    estadoPedido.metodoPago = this.dataset.method; 
-
-                    const screenshotInput = document.getElementById('paymentScreenshot');
-                    confirmOrderBtn.disabled = screenshotInput.files.length === 0;
-                });
-            });
+        } catch (e) {
+            console.error("🔴 Error al guardar la orden en Firestore:", e);
+            showMessage("Error al guardar la orden: " + e.message, true);
+            document.getElementById('confirmOrderBtn').disabled = false;
+        }
+    }
 
 
-            document.getElementById('paymentScreenshot').addEventListener('change', (e) => {
-                confirmOrderBtn.disabled = e.target.files.length === 0;
-            });
+    // -------------------------------------------------------------------
+    // LÓGICA DEL CHECKOUT (Inicialización de DOM y Event Listeners)
+    // -------------------------------------------------------------------
 
-            confirmOrderBtn.addEventListener('click', async () => {
-                if (!estadoPedido.metodoPago || document.getElementById('paymentScreenshot').files.length === 0) { 
-                    showMessage("Falta seleccionar método de pago o subir la captura.", true);
-                    return;
-                }
-                
-                confirmOrderBtn.disabled = true;
-                confirmOrderBtn.textContent = 'Guardando Orden...';
-                await guardarPedidoEnFirestore(); 
-                confirmOrderBtn.textContent = 'Confirmar Orden';
-            });
-            
-            vaciarCarritoBtn.addEventListener('click', () => {
-                 const modal = document.getElementById('checkoutModal');
-                 const tempConfirm = createCustomConfirm('¿Vaciar carrito y volver al catálogo?', () => {
-                    cartSelections = []; 
-                    saveCart(cartSelections);
-                    window.history.back(); 
-                    modal.removeChild(tempConfirm);
-                }, () => {
-                    modal.removeChild(tempConfirm);
-                });
-                modal.appendChild(tempConfirm);
-            });
+    const checkoutModal = document.getElementById('checkoutModal');
+    const closeCheckoutBtn = document.getElementById('closeCheckoutBtn');
+    const cartSummaryDiv = document.getElementById('cartSummary');
+    const subtotalProductsSpan = document.getElementById('subtotalProducts');
+    const addressForm = document.getElementById('addressForm');
+    const vaciarCarritoBtn = document.getElementById('vaciarCarritoBtn');
+    const confirmOrderBtn = document.getElementById('confirmOrderBtn');
 
-            closeCheckoutBtn.addEventListener('click', () => { 
-                window.history.back(); 
-            });
+    let currentStep = 1;
 
-            document.getElementById('closeAndReturnBtn').addEventListener('click', () => { 
-                window.history.back(); 
-            });
+function setStep(step) {
+    currentStep = step;
+    
+    document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+    
+    document.querySelectorAll('.step-indicator > div').forEach(el => el.classList.remove('active'));
 
+    const stepContent = document.getElementById(`step${step}`);
+    if (stepContent) {
+        stepContent.classList.add('active');
+    } else {
+        console.warn(`[setStep Warning] No se encontró el contenido para: step${step}`);
+    }
+
+    const stepIndicator = document.getElementById(`stepIndicator${step}`);
+    if (step < 4 && stepIndicator) {
+        stepIndicator.classList.add('active');
+    }
+
+    const titles = { 1: 'Tu Carrito y Dirección', 2: 'Resumen de la Orden y Envío', 3: 'Finalizar Pago', 4: 'Confirmación de Pedido' };
+    document.getElementById('checkoutTitle').textContent = titles[step] || 'Checkout';
+
+    document.querySelector('.step-indicator').style.display = step < 4 ? 'flex' : 'none';
+
+    if (step === 2) {
+        const subtotalElement = document.querySelector('#step2 .font-extrabold > span:first-child');
+        if (subtotalElement) {
+             subtotalElement.textContent = 'SUBTOTAL A TRANSFERIR';
+        }
+    }
+}
+
+    
+    function removeItem(index) {
+        const modal = document.getElementById('checkoutModal');
+        const tempConfirm = createCustomConfirm('¿Estás seguro de que quieres eliminar este producto del carrito?', () => {
+            cartSelections.splice(index, 1); 
+            saveCart(cartSelections);
             renderCartSummary();
-            setStep(1);
-
-            const activeModalColorIndices = {}; 
-            for(let i = 1; i <= modalesCountRelojes; i++) { setupModal(`modalProducto${i}`, i, ""); }
-            for(let i = 1; i <= modalesCountRopa; i++) { setupModal(`modalRopa${i}`, i, "Ropa"); }
-
-            function setupModal(modalId, index, prefix) {
-                const modal = document.getElementById(modalId);
-                if (!modal) return;
-                activeModalColorIndices[modalId] = 0;
-            } 
+            showMessage("Producto eliminado del carrito.", false);
+            modal.removeChild(tempConfirm);
+        }, () => {
+            modal.removeChild(tempConfirm);
         });
-    </script>
+        modal.appendChild(tempConfirm);
+    }
+    
+    function createCustomConfirm(message, onConfirm, onCancel) {
+        const confirmModal = document.createElement('div');
+        confirmModal.className = 'fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[110] p-4';
+        confirmModal.innerHTML = `
+            <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+                <p class="text-lg font-semibold mb-4">${message}</p>
+                <div class="flex justify-end space-x-3">
+                    <button id="cancelBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
+                    <button id="confirmBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Confirmar</button>
+                </div>
+            </div>
+        `;
+        
+        confirmModal.querySelector('#confirmBtn').onclick = onConfirm;
+        confirmModal.querySelector('#cancelBtn').onclick = onCancel;
+        return confirmModal;
+    }
 
+    function renderCartSummary() {
+        cartSelections = loadCart(); 
+
+        const subtotal = calcularTotalCarrito();
+        estadoPedido.subtotal = subtotal; 
+
+        subtotalProductsSpan.textContent = formatCurrency(subtotal);
+        document.getElementById('displaySubtotal2').textContent = formatCurrency(subtotal);
+        
+        if (cartSelections.length === 0) {
+            cartSummaryDiv.innerHTML = '<p class="text-red-500 text-center py-4 font-bold">⚠️ ¡El carrito está vacío! Agrega productos desde el catálogo.</p>';
+            document.getElementById('nextToStep2').disabled = true;
+            if (currentStep > 1) setStep(1); 
+            return;
+        }
+        
+        document.getElementById('nextToStep2').disabled = false;
+
+        let html = cartSelections.map((item, index) => `
+            <div class="flex justify-between items-center p-2 border-b last:border-b-0">
+                <div class="flex flex-col">
+                    <span class="font-semibold">${item.name}</span>
+                    <span class="text-sm text-gray-500">Color: ${item.color} - Cant: ${item.quantity}</span>
+                    <span class="text-sm font-bold">${formatCurrency(item.price * item.quantity)}</span>
+                </div>
+                <button class="remove-item-btn text-red-500 hover:text-red-700 p-1 transition" data-index="${index}" title="Eliminar Producto">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            </div>
+        `).join('');
+        
+        cartSummaryDiv.innerHTML = html;
+        lucide.createIcons(); 
+
+        document.querySelectorAll('.remove-item-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const index = parseInt(e.currentTarget.dataset.index);
+                removeItem(index);
+            });
+        });
+    }
+
+    document.getElementById('nextToStep2').addEventListener('click', () => {
+        if (cartSelections.length === 0) { showMessage("El carrito está vacío.", true); return; }
+        if (!addressForm.checkValidity()) { showMessage("Completa todos los campos de la dirección.", true); addressForm.reportValidity(); return; }
+
+        estadoPedido.cliente = {
+            name: document.getElementById('clientName').value,
+            phone: document.getElementById('clientPhone').value,
+            department: document.getElementById('clientDepartment').value, 
+            city: document.getElementById('clientCity').value,
+            address: document.getElementById('clientAddress').value,
+        };
+        
+        const cotizacion = cotizarEnvioFijo();
+        const costoEnvio = cotizacion.costo;
+
+        estadoPedido.costoEnvio = costoEnvio;
+        estadoPedido.totalFinal = estadoPedido.subtotal; 
+        
+        document.getElementById('displayShippingCost').textContent = formatCurrency(costoEnvio);
+        document.getElementById('displayFinalTotal').textContent = formatCurrency(estadoPedido.totalFinal); 
+
+        document.getElementById('shippingQuoteResult').innerHTML = `
+            <p class="text-lg font-bold text-blue-700">Costo de Envío Estimado (Aproximado):</p>
+            <p class="text-2xl">${formatCurrency(costoEnvio)}</p>
+            <p class="text-sm text-red-600 font-bold mt-2">
+                🔴 ATENCIÓN: El costo exacto se te notificará al momento de despachar.
+            </p>
+            <p class="text-sm text-green-700 mt-1 font-bold">
+                ✅ El valor del envío real <strong>(aproximado a ${formatCurrency(costoEnvio)})</strong> se paga al momento de recibir el producto (contra entrega).
+            </p>
+        `;
+
+        setStep(2);
+    });
+
+    document.getElementById('nextToStep3').addEventListener('click', () => { setStep(3); });
+    document.getElementById('backToStep1').addEventListener('click', () => setStep(1));
+    document.getElementById('backToStep2').addEventListener('click', () => setStep(2));
+    
+    document.querySelectorAll('.qr-option').forEach(option => {
+    option.addEventListener('click', function() {
+        document.querySelectorAll('.qr-option').forEach(opt => {
+            opt.classList.remove('selected');
+            opt.querySelector('.payment-check').classList.add('hidden');
+            opt.querySelector('.qr-image').classList.add('hidden');
+        });
+
+        this.classList.add('selected');
+        this.querySelector('.payment-check').classList.remove('hidden');
+        this.querySelector('.qr-image').classList.remove('hidden');
+
+        document.getElementById('paymentUploadSection').classList.remove('hidden');
+        
+        estadoPedido.metodoPago = this.dataset.method; 
+
+        const screenshotInput = document.getElementById('paymentScreenshot');
+        
+        if (firebaseInitialized && screenshotInput.files.length > 0) {
+             confirmOrderBtn.disabled = false;
+        } else {
+             confirmOrderBtn.disabled = true; 
+        }
+    });
+});
+
+    document.getElementById('paymentScreenshot').addEventListener('change', (e) => {
+        confirmOrderBtn.disabled = e.target.files.length === 0 || !firebaseInitialized;
+    });
+
+    confirmOrderBtn.addEventListener('click', async () => {
+        if (!estadoPedido.metodoPago || document.getElementById('paymentScreenshot').files.length === 0) { 
+            showMessage("Falta seleccionar método de pago o subir la captura.", true);
+            return;
+        }
+        
+        confirmOrderBtn.disabled = true;
+        confirmOrderBtn.textContent = 'Guardando Orden...';
+        await guardarPedidoEnFirestore(); 
+        confirmOrderBtn.textContent = 'Confirmar Orden';
+    });
+    
+    vaciarCarritoBtn.addEventListener('click', () => {
+        const modal = document.getElementById('checkoutModal');
+        const tempConfirm = createCustomConfirm('¿Vaciar carrito y volver al catálogo?', () => {
+            cartSelections = []; 
+            saveCart(cartSelections);
+            window.history.back(); 
+            modal.removeChild(tempConfirm);
+        }, () => {
+            modal.removeChild(tempConfirm);
+        });
+        modal.appendChild(tempConfirm);
+    });
+
+    closeCheckoutBtn.addEventListener('click', () => { window.history.back(); });
+    document.getElementById('closeAndReturnBtn').addEventListener('click', () => { window.history.back(); });
+
+    // -------------------------------------------------------------------
+    // PUNTO DE INICIO: Inicialización principal
+    // -------------------------------------------------------------------
+// -------------------------------------------------------------------
+// PUNTO DE INICIO: Inicialización principal
+// -------------------------------------------------------------------
+document.addEventListener("DOMContentLoaded", async () => {
+    lucide.createIcons();
+    
+    const screenshotInput = document.getElementById('paymentScreenshot');
+    
+    if (confirmOrderBtn) confirmOrderBtn.disabled = true;
+    
+    if (screenshotInput) {
+        screenshotInput.disabled = false; 
+    }
+
+    const success = await initFirebaseAndAssignVars();
+
+    if (success) {
+        if (screenshotInput) {
+            screenshotInput.disabled = false; 
+            console.log("✅ Input de comprobante habilitado.");
+        }
+        
+        if (confirmOrderBtn) {
+            confirmOrderBtn.disabled = screenshotInput.files.length === 0;
+        }
+        
+        showMessage("✅ Conexión a Firebase lista.", false);
+    } else {
+        showMessage("🔴 Error crítico: No se pudo conectar a Firebase. El guardado NO funcionará.", true);
+    }
+
+    renderCartSummary();
+    setStep(1);
+
+    const activeModalColorIndices = {}; 
+    for(let i = 1; i <= modalesCountRelojes; i++) { setupModal(`modalProducto${i}`, i, ""); }
+    for(let i = 1; i <= modalesCountRopa; i++) { setupModal(`modalRopa${i}`, i, "Ropa"); }
+});
+
+    function setupModal(modalId, index, prefix) {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+    } 
+
+</script>
 
 
 
